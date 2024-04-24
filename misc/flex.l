@@ -2,7 +2,7 @@
     #include "parser.hpp"
     #include <iostream>
 
-    #include "../Kit32.hpp"
+    #include "../inc/common/Elf.hpp"
 
     using namespace std;
 

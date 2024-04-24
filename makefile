@@ -2,10 +2,10 @@
 SOURCE_FILES = \
 misc/flex.cpp \
 misc/parser.cpp \
-main.cpp
+src/assembler/main.cpp
 
 HEADER_FILES = \
-Kit32.hpp \
+inc/common/Elf.hpp \
 misc/flex.hpp \
 misc/parser.hpp
 
