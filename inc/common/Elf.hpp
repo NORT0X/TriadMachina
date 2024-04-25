@@ -10,6 +10,8 @@ typedef uint32_t SectionIndex;
 
 typedef uint32_t SymbolIndex;
 
+typedef uint32_t ForwardrefIndex;
+
 /* Used by pareser */
 enum {
     SP = 14,
@@ -53,6 +55,8 @@ struct SymbolEntry {
     SectionIndex section_id;
     SymbolBind bind;
     uint32_t value;
+    bool defined;
+    ForwardrefIndex flink;
 
     SymbolEntry(SymbolIndex index, StringIndex name, SectionIndex section_id, SymbolBind bind, uint32_t value)
         : index(index)
@@ -75,6 +79,17 @@ struct SectionEntry {
         , name(name)
         , base(base)
         , size(size)
+    {
+    }
+};
+
+struct ForwardrefEntry {
+    ForwardrefIndex index;
+    uint32_t patch;
+
+    ForwardrefEntry(ForwardrefIndex index, uint32_t patch)
+        : index(index)
+        , patch(patch)
     {
     }
 };
