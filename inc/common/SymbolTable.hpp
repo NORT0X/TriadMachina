@@ -1,13 +1,18 @@
-#include "Elf.hpp"
 #include <vector>
+#include <cstdint>
 
-class SymbolTable {
+struct SymbolEntry;
+
+typedef uint32_t SymbolIndex;
+
+class SymbolTable
+{
 public:
-    SymbolTable() { }
+    SymbolTable() {}
 
-    bool insertSymbol(SymbolEntry entry);
+    void addSymbol(SymbolEntry entry);
 
-    SymbolEntry getSymbolByIndex(SymbolIndex index);
+    SymbolEntry *findSymbol(SymbolIndex index);
 
 private:
     std::vector<SymbolEntry> table;

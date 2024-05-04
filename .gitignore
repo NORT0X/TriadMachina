@@ -34,3 +34,4 @@
 *.clang-format
 
 commit.sh
+*.exe

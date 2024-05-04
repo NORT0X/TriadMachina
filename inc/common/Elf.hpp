@@ -10,15 +10,17 @@ typedef uint32_t SectionIndex;
 
 typedef uint32_t SymbolIndex;
 
-typedef uint32_t ForwardrefIndex;
+typedef uint32_t ForwardRefIndex;
 
 /* Used by pareser */
-enum {
+enum
+{
     SP = 14,
     PC = 15
 };
 
-enum {
+enum
+{
     STATUS = 0,
     HANDLER,
     CAUSE
@@ -26,7 +28,8 @@ enum {
 
 /* -------------- */
 
-enum SymbolBind {
+enum SymbolBind
+{
     LOCAL_BIND,
     GLOBAL_BIND,
     EXTERN_BIND
@@ -34,62 +37,55 @@ enum SymbolBind {
 
 /* Table Entries */
 
-struct LiteralEntry {
+struct LiteralEntry
+{
     StringIndex index;
     std::size_t address;
     std::size_t offset;
     std::string literal;
 
     LiteralEntry(StringIndex index, std::size_t address, std::size_t offset, std::string literal)
-        : index(index)
-        , address(address)
-        , offset(offset)
-        , literal(literal)
+        : index(index), address(address), offset(offset), literal(literal)
     {
     }
 };
 
-struct SymbolEntry {
+struct SymbolEntry
+{
     SymbolIndex index;
     StringIndex name; // index inside literal table (pool)
     SectionIndex section_id;
     SymbolBind bind;
     uint32_t value;
     bool defined;
-    ForwardrefIndex flink;
+    ForwardRefIndex flink;
 
     SymbolEntry(SymbolIndex index, StringIndex name, SectionIndex section_id, SymbolBind bind, uint32_t value)
-        : index(index)
-        , name(name)
-        , section_id(section_id)
-        , bind(bind)
-        , value(value)
+        : index(index), name(name), section_id(section_id), bind(bind), value(value)
     {
     }
 };
 
-struct SectionEntry {
+struct SectionEntry
+{
     SectionIndex index;
     StringIndex name;
     std::size_t base;
     std::size_t size;
 
     SectionEntry(SectionIndex index, StringIndex name, std::size_t base, std::size_t size)
-        : index(index)
-        , name(name)
-        , base(base)
-        , size(size)
+        : index(index), name(name), base(base), size(size)
     {
     }
 };
 
-struct ForwardrefEntry {
-    ForwardrefIndex index;
+struct ForwardRefEntry
+{
+    ForwardRefIndex index;
     uint32_t patch;
 
-    ForwardrefEntry(ForwardrefIndex index, uint32_t patch)
-        : index(index)
-        , patch(patch)
+    ForwardRefEntry(ForwardRefIndex index, uint32_t patch)
+        : index(index), patch(patch)
     {
     }
 };
