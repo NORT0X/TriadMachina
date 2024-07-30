@@ -1,8 +1,11 @@
 #pragma once
 
+#include "File.hpp"
+
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#include <fstream>
 
 typedef uint32_t StringIndex; // Index inside Literal table;
 
@@ -88,4 +91,16 @@ struct ForwardRefEntry
         : index(index), patch(patch)
     {
     }
+};
+
+class ElfFile : public File
+{
+public:
+    bool open(const std::string &filename) override;
+    void close() override;
+    std::vector<char> read() override;
+    bool write(const std::vector<char> &data) override;
+
+private:
+    std::fstream fileStream;
 };

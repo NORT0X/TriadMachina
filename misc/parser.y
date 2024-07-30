@@ -1,4 +1,5 @@
 %{
+    #include <cstdint>
     #include <iostream>
     #include <memory>
 
@@ -16,8 +17,8 @@
 %defines "parser.hpp"
 
 %union {
-    u_int32_t ival;
-    u_int8_t rval;
+    uint32_t ival;
+    uint8_t rval;
     char *sval;
 }
 

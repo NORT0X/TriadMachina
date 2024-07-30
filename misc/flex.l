@@ -1,4 +1,5 @@
 %{
+    #include <cstdint>
     #include "parser.hpp"
     #include <iostream>
 
