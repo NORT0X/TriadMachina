@@ -69,17 +69,19 @@
     #include <iostream>
     #include <memory>
 
+    #include "../inc/assembler/Assembler.hpp"
     #include "../inc/common/Elf.hpp"
 
     using namespace std;
 
     extern int yylex(void);
     extern int lineNum;
+    extern unique_ptr<Assembler> as;
     
     void yyerror(const char *);
 
 /* Line 371 of yacc.c  */
-#line 83 "parser.cpp"
+#line 85 "parser.cpp"
 
 # ifndef YY_NULL
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -164,7 +166,7 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 387 of yacc.c  */
-#line 19 "parser.y"
+#line 21 "parser.y"
 
     uint32_t ival;
     uint8_t rval;
@@ -172,7 +174,7 @@ typedef union YYSTYPE
 
 
 /* Line 387 of yacc.c  */
-#line 176 "parser.cpp"
+#line 178 "parser.cpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -200,7 +202,7 @@ int yyparse ();
 /* Copy the second part of user declarations.  */
 
 /* Line 390 of yacc.c  */
-#line 204 "parser.cpp"
+#line 206 "parser.cpp"
 
 #ifdef short
 # undef short
@@ -528,14 +530,14 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    43,    43,    45,    49,    50,    54,    55,    56,    57,
-      58,    59,    63,    67,    68,    69,    70,    71,    72,    73,
-      74,    78,    79,    80,    81,    82,    83,    84,    85,    86,
-      87,    88,    89,    90,    91,    92,    93,    94,    95,    96,
-      97,    98,    99,   100,   101,   102,   103,   104,   105,   106,
-     107,   108,   109,   110,   111,   112,   113,   114,   115,   116,
-     117,   118,   119,   123,   124,   125,   126,   130,   131,   135,
-     136,   140,   141,   142,   143,   144,   145
+       0,    45,    45,    47,    51,    52,    56,    57,    58,    59,
+      60,    61,    65,    69,    70,    71,    72,    73,    74,    75,
+      76,    80,    81,    82,    83,    84,    85,    86,    87,    88,
+      89,    90,    91,    92,    93,    94,    95,    96,    97,    98,
+      99,   100,   101,   102,   103,   104,   105,   106,   107,   108,
+     109,   110,   111,   112,   113,   114,   115,   116,   117,   118,
+     119,   120,   121,   125,   126,   127,   128,   132,   133,   137,
+     138,   142,   143,   144,   145,   146,   147
 };
 #endif
 
@@ -1547,379 +1549,385 @@ yyreduce:
     {
         case 3:
 /* Line 1792 of yacc.c  */
-#line 45 "parser.y"
+#line 47 "parser.y"
     { std::cout << "END\n"; }
     break;
 
   case 12:
 /* Line 1792 of yacc.c  */
-#line 63 "parser.y"
+#line 65 "parser.y"
     { std::cout << (yyvsp[(1) - (2)].sval) << std::endl; }
     break;
 
   case 15:
 /* Line 1792 of yacc.c  */
-#line 69 "parser.y"
-    { std::cout << "SECTION" << " " << (yyvsp[(2) - (2)].sval) << std::endl; }
+#line 71 "parser.y"
+    { std::cout << "SECTION" << " " << (yyvsp[(2) - (2)].sval) << std::endl; as->sectionDirective((yyvsp[(2) - (2)].sval)); }
     break;
 
   case 17:
 /* Line 1792 of yacc.c  */
-#line 71 "parser.y"
-    { std::cout << "LITERAL " << (yyvsp[(2) - (2)].ival) << std::endl; }
+#line 73 "parser.y"
+    { std::cout << "LITERAL " << (yyvsp[(2) - (2)].ival) << std::endl; as->skipDirective((yyvsp[(2) - (2)].ival)); }
     break;
 
   case 18:
 /* Line 1792 of yacc.c  */
-#line 72 "parser.y"
+#line 74 "parser.y"
     { std::cout << "ASCII " << "$2" << std::endl; }
     break;
 
   case 19:
 /* Line 1792 of yacc.c  */
-#line 73 "parser.y"
+#line 75 "parser.y"
     { std::cout << "EQU " << (yyvsp[(2) - (4)].sval) << "=" << "IVAL" << std::endl; }
+    break;
+
+  case 20:
+/* Line 1792 of yacc.c  */
+#line 76 "parser.y"
+    { as->end(); }
     break;
 
   case 21:
 /* Line 1792 of yacc.c  */
-#line 78 "parser.y"
+#line 80 "parser.y"
     { std::cout << "HALT\n"; }
     break;
 
   case 22:
 /* Line 1792 of yacc.c  */
-#line 79 "parser.y"
+#line 81 "parser.y"
     { std::cout << "INT\n"; }
     break;
 
   case 23:
 /* Line 1792 of yacc.c  */
-#line 80 "parser.y"
+#line 82 "parser.y"
     { std::cout << "IRET\n"; }
     break;
 
   case 24:
 /* Line 1792 of yacc.c  */
-#line 81 "parser.y"
+#line 83 "parser.y"
     { std::cout << "CALL " << (yyvsp[(2) - (2)].ival) << std::endl; }
     break;
 
   case 25:
 /* Line 1792 of yacc.c  */
-#line 82 "parser.y"
+#line 84 "parser.y"
     { std::cout << "CALL " << (yyvsp[(2) - (2)].sval) << std::endl; }
     break;
 
   case 26:
 /* Line 1792 of yacc.c  */
-#line 83 "parser.y"
+#line 85 "parser.y"
     { std::cout << "RET\n"; }
     break;
 
   case 27:
 /* Line 1792 of yacc.c  */
-#line 84 "parser.y"
+#line 86 "parser.y"
     { std::cout << "JMP " << (yyvsp[(2) - (2)].ival) << std::endl; }
     break;
 
   case 28:
 /* Line 1792 of yacc.c  */
-#line 85 "parser.y"
+#line 87 "parser.y"
     { std::cout << "JMP " << (yyvsp[(2) - (2)].sval) << std::endl; }
     break;
 
   case 29:
 /* Line 1792 of yacc.c  */
-#line 86 "parser.y"
+#line 88 "parser.y"
     { std::cout << "BEQ " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].ival) << std::endl; }
     break;
 
   case 30:
 /* Line 1792 of yacc.c  */
-#line 87 "parser.y"
+#line 89 "parser.y"
     { std::cout << "BEQ " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].sval) << std::endl; }
     break;
 
   case 31:
 /* Line 1792 of yacc.c  */
-#line 88 "parser.y"
+#line 90 "parser.y"
     { std::cout << "BNE " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].ival) << std::endl; }
     break;
 
   case 32:
 /* Line 1792 of yacc.c  */
-#line 89 "parser.y"
+#line 91 "parser.y"
     { std::cout << "BNE " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].sval) << std::endl; }
     break;
 
   case 33:
 /* Line 1792 of yacc.c  */
-#line 90 "parser.y"
+#line 92 "parser.y"
     { std::cout << "BGT " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].ival) << std::endl; }
     break;
 
   case 34:
 /* Line 1792 of yacc.c  */
-#line 91 "parser.y"
+#line 93 "parser.y"
     { std::cout << "BGT " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].sval) << std::endl; }
     break;
 
   case 35:
 /* Line 1792 of yacc.c  */
-#line 92 "parser.y"
+#line 94 "parser.y"
     { std::cout << "PUSH " << (yyvsp[(2) - (2)].rval) << std::endl; }
     break;
 
   case 36:
 /* Line 1792 of yacc.c  */
-#line 93 "parser.y"
+#line 95 "parser.y"
     { std::cout << "POP " << (yyvsp[(2) - (2)].rval) << std::endl; }
     break;
 
   case 37:
 /* Line 1792 of yacc.c  */
-#line 94 "parser.y"
+#line 96 "parser.y"
     { std::cout << "XCHG " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
     break;
 
   case 38:
 /* Line 1792 of yacc.c  */
-#line 95 "parser.y"
-    { std::cout << "ADD " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
+#line 97 "parser.y"
+    { std::cout << "ADD " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->addInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
     break;
 
   case 39:
 /* Line 1792 of yacc.c  */
-#line 96 "parser.y"
-    { std::cout << "SUB " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
+#line 98 "parser.y"
+    { std::cout << "SUB " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->subInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
     break;
 
   case 40:
 /* Line 1792 of yacc.c  */
-#line 97 "parser.y"
-    { std::cout << "MUL " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
+#line 99 "parser.y"
+    { std::cout << "MUL " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->mulInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
     break;
 
   case 41:
 /* Line 1792 of yacc.c  */
-#line 98 "parser.y"
-    { std::cout << "DIV " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
+#line 100 "parser.y"
+    { std::cout << "DIV " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->divInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
     break;
 
   case 42:
 /* Line 1792 of yacc.c  */
-#line 99 "parser.y"
-    { std::cout << "NOT " << (yyvsp[(2) - (2)].rval) << std::endl; }
+#line 101 "parser.y"
+    { std::cout << "NOT " << (yyvsp[(2) - (2)].rval) << std::endl; as->notInstruction((yyvsp[(2) - (2)].rval)); }
     break;
 
   case 43:
 /* Line 1792 of yacc.c  */
-#line 100 "parser.y"
-    { std::cout << "AND " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
+#line 102 "parser.y"
+    { std::cout << "AND " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->andInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
     break;
 
   case 44:
 /* Line 1792 of yacc.c  */
-#line 101 "parser.y"
-    { std::cout << "OR " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
+#line 103 "parser.y"
+    { std::cout << "OR " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->orInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
     break;
 
   case 45:
 /* Line 1792 of yacc.c  */
-#line 102 "parser.y"
-    { std::cout << "XOR " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
+#line 104 "parser.y"
+    { std::cout << "XOR " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->xorInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
     break;
 
   case 46:
 /* Line 1792 of yacc.c  */
-#line 103 "parser.y"
-    { std::cout << "SHL " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
+#line 105 "parser.y"
+    { std::cout << "SHL " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->shlInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
     break;
 
   case 47:
 /* Line 1792 of yacc.c  */
-#line 104 "parser.y"
-    { std::cout << "SHR " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
+#line 106 "parser.y"
+    { std::cout << "SHR " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->shrInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
     break;
 
   case 48:
 /* Line 1792 of yacc.c  */
-#line 105 "parser.y"
+#line 107 "parser.y"
     { std::cout << "LD " << (yyvsp[(3) - (5)].ival) << " " << (yyvsp[(5) - (5)].rval) << std::endl; }
     break;
 
   case 49:
 /* Line 1792 of yacc.c  */
-#line 106 "parser.y"
+#line 108 "parser.y"
     { std::cout << "LD " << (yyvsp[(3) - (5)].sval) << " " << (yyvsp[(5) - (5)].rval) << std::endl; }
     break;
 
   case 50:
 /* Line 1792 of yacc.c  */
-#line 107 "parser.y"
+#line 109 "parser.y"
     { std::cout << "LD " << (yyvsp[(2) - (4)].ival) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
     break;
 
   case 51:
 /* Line 1792 of yacc.c  */
-#line 108 "parser.y"
+#line 110 "parser.y"
     { std::cout << "LD " << (yyvsp[(2) - (4)].sval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
     break;
 
   case 52:
 /* Line 1792 of yacc.c  */
-#line 109 "parser.y"
+#line 111 "parser.y"
     { std::cout << "LD " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
     break;
 
   case 53:
 /* Line 1792 of yacc.c  */
-#line 110 "parser.y"
+#line 112 "parser.y"
     { std::cout << "LD " << (yyvsp[(3) - (6)].rval) << " " << (yyvsp[(6) - (6)].rval) << std::endl; }
     break;
 
   case 54:
 /* Line 1792 of yacc.c  */
-#line 111 "parser.y"
+#line 113 "parser.y"
     { std::cout << "LD " << (yyvsp[(3) - (8)].rval) << "+" << (yyvsp[(5) - (8)].ival) << (yyvsp[(8) - (8)].rval) << std::endl; }
     break;
 
   case 55:
 /* Line 1792 of yacc.c  */
-#line 112 "parser.y"
+#line 114 "parser.y"
     { std::cout << "LD " << (yyvsp[(3) - (8)].rval) << "+" << (yyvsp[(5) - (8)].sval) << (yyvsp[(8) - (8)].rval) << std::endl; }
     break;
 
   case 56:
 /* Line 1792 of yacc.c  */
-#line 113 "parser.y"
+#line 115 "parser.y"
     { std::cout << "ST " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].ival) << std::endl; }
     break;
 
   case 57:
 /* Line 1792 of yacc.c  */
-#line 114 "parser.y"
+#line 116 "parser.y"
     { std::cout << "ST " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].sval) << std::endl; }
     break;
 
   case 58:
 /* Line 1792 of yacc.c  */
-#line 115 "parser.y"
+#line 117 "parser.y"
     { std::cout << "ST " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(5) - (6)].rval) << std::endl; }
     break;
 
   case 59:
 /* Line 1792 of yacc.c  */
-#line 116 "parser.y"
+#line 118 "parser.y"
     { std::cout << "ST " << (yyvsp[(2) - (8)].rval) << " " << (yyvsp[(5) - (8)].rval) << "+" << (yyvsp[(7) - (8)].ival) << std::endl; }
     break;
 
   case 60:
 /* Line 1792 of yacc.c  */
-#line 117 "parser.y"
+#line 119 "parser.y"
     { std::cout << "ST " << (yyvsp[(2) - (8)].rval) << " " << (yyvsp[(5) - (8)].rval) << "+" << (yyvsp[(7) - (8)].sval) << std::endl; }
     break;
 
   case 61:
 /* Line 1792 of yacc.c  */
-#line 118 "parser.y"
+#line 120 "parser.y"
     { std::cout << "CSRRD " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
     break;
 
   case 62:
 /* Line 1792 of yacc.c  */
-#line 119 "parser.y"
+#line 121 "parser.y"
     { std::cout << "CSRWR " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
     break;
 
   case 63:
 /* Line 1792 of yacc.c  */
-#line 123 "parser.y"
+#line 125 "parser.y"
     { std::cout << "INIT_LIST " << (yyvsp[(1) - (1)].sval) << std::endl; }
     break;
 
   case 64:
 /* Line 1792 of yacc.c  */
-#line 124 "parser.y"
+#line 126 "parser.y"
     { std::cout << "INIT_LIST " << (yyvsp[(1) - (1)].ival) << std::endl; }
     break;
 
   case 65:
 /* Line 1792 of yacc.c  */
-#line 125 "parser.y"
+#line 127 "parser.y"
     { std::cout << "INIT_LIST " << (yyvsp[(3) - (3)].sval) << std::endl; }
     break;
 
   case 66:
 /* Line 1792 of yacc.c  */
-#line 126 "parser.y"
+#line 128 "parser.y"
     { std::cout << "INIT_LIST " << (yyvsp[(3) - (3)].ival) << std::endl; }
     break;
 
   case 67:
 /* Line 1792 of yacc.c  */
-#line 130 "parser.y"
-    { std::cout << "GLOBAL_ARGS " << (yyvsp[(1) - (1)].sval) << std::endl; }
+#line 132 "parser.y"
+    { std::cout << "GLOBAL_ARGS " << (yyvsp[(1) - (1)].sval) << std::endl; as->globalDirective((yyvsp[(1) - (1)].sval)); }
     break;
 
   case 68:
 /* Line 1792 of yacc.c  */
-#line 131 "parser.y"
-    { std::cout << "GLOBAL_ARGS " << (yyvsp[(3) - (3)].sval) << std::endl; }
+#line 133 "parser.y"
+    { std::cout << "GLOBAL_ARGS " << (yyvsp[(3) - (3)].sval) << std::endl; as->globalDirective((yyvsp[(3) - (3)].sval)); }
     break;
 
   case 69:
 /* Line 1792 of yacc.c  */
-#line 135 "parser.y"
-    { std::cout << "EXTERN_ARGS " << (yyvsp[(1) - (1)].sval) << std::endl; }
+#line 137 "parser.y"
+    { std::cout << "EXTERN_ARGS " << (yyvsp[(1) - (1)].sval) << std::endl; as->externDirective((yyvsp[(1) - (1)].sval)); }
     break;
 
   case 70:
 /* Line 1792 of yacc.c  */
-#line 136 "parser.y"
-    { std::cout << "EXTERN_ARGS " << (yyvsp[(3) - (3)].sval) << std::endl; }
+#line 138 "parser.y"
+    { std::cout << "EXTERN_ARGS " << (yyvsp[(3) - (3)].sval) << std::endl; as->externDirective((yyvsp[(3) - (3)].sval)); }
     break;
 
   case 71:
 /* Line 1792 of yacc.c  */
-#line 140 "parser.y"
+#line 142 "parser.y"
     { std::cout << "IVAL_EXPR " << (yyvsp[(1) - (1)].ival) << std::endl; }
     break;
 
   case 72:
 /* Line 1792 of yacc.c  */
-#line 141 "parser.y"
+#line 143 "parser.y"
     { std::cout << "IVAL_EXPR " << (yyvsp[(1) - (1)].sval) << std::endl; }
     break;
 
   case 73:
 /* Line 1792 of yacc.c  */
-#line 142 "parser.y"
+#line 144 "parser.y"
     { std::cout << "IVAL_EXPR +\n"; }
     break;
 
   case 74:
 /* Line 1792 of yacc.c  */
-#line 143 "parser.y"
+#line 145 "parser.y"
     { std::cout << "IVAL_EXPR -\n"; }
     break;
 
   case 75:
 /* Line 1792 of yacc.c  */
-#line 144 "parser.y"
+#line 146 "parser.y"
     { std::cout << "UMINUS\n"; }
     break;
 
   case 76:
 /* Line 1792 of yacc.c  */
-#line 145 "parser.y"
+#line 147 "parser.y"
     { std::cout << "IVAL_EXPR ()\n"; }
     break;
 
 
 /* Line 1792 of yacc.c  */
-#line 1923 "parser.cpp"
+#line 1931 "parser.cpp"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2151,7 +2159,7 @@ yyreturn:
 
 
 /* Line 2055 of yacc.c  */
-#line 148 "parser.y"
+#line 150 "parser.y"
 
 
 void yyerror(const char *s) {

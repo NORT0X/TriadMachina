@@ -5,6 +5,7 @@
 
 class File
 {
+public:
     File() {}
 
     virtual bool open(const std::string &filename) = 0;

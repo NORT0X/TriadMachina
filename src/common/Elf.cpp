@@ -4,7 +4,7 @@
 
 bool ElfFile::open(const std::string &filename)
 {
-    fileStream.open(filename, std::ios::binary | std::ios::in | std::ios::out);
+    fileStream.open(filename, std::ios::binary | std::ios::in | std::ios::out | std::ios::trunc);
     if (!fileStream)
     {
         std::cerr << "Failed to open file: " << filename << std::endl;

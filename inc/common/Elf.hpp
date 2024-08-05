@@ -63,8 +63,8 @@ struct SymbolEntry
     bool defined;
     ForwardRefIndex flink;
 
-    SymbolEntry(SymbolIndex index, StringIndex name, SectionIndex section_id, SymbolBind bind, uint32_t value)
-        : index(index), name(name), section_id(section_id), bind(bind), value(value)
+    SymbolEntry(StringIndex name, SectionIndex section_id, SymbolBind bind, uint32_t value, bool defined = false)
+        : name(name), section_id(section_id), bind(bind), value(value), defined(defined)
     {
     }
 };

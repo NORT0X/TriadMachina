@@ -6,7 +6,8 @@ src/assembler/main.cpp \
 src/common/Elf.cpp \
 src/common/LiteralTable.cpp \
 src/common/SectionTable.cpp \
-src/common/SymbolTable.cpp
+src/common/SymbolTable.cpp \
+src/assembler/Assembler.cpp
 
 HEADER_FILES = \
 inc/common/Elf.hpp \
@@ -15,6 +16,7 @@ inc/common/ForwardRefTable.hpp \
 inc/common/LiteralTable.hpp \
 inc/common/SectionTable.hpp \
 inc/common/SymbolTable.hpp \
+inc/assembler/Assembler.hpp \
 misc/flex.hpp \
 misc/parser.hpp
 
