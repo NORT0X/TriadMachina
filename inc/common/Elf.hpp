@@ -76,8 +76,8 @@ struct SectionEntry
     std::size_t base;
     std::size_t size;
 
-    SectionEntry(SectionIndex index, StringIndex name, std::size_t base, std::size_t size)
-        : index(index), name(name), base(base), size(size)
+    SectionEntry(StringIndex name, std::size_t base, std::size_t size)
+        : name(name), base(base), size(size)
     {
     }
 };
