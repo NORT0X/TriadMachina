@@ -62,7 +62,7 @@ statement:
          ;
 
 label:
-        SYMBOL ':' { std::cout << $1 << std::endl; }
+        SYMBOL ':' { std::cout << $1 << std::endl; as->label($1); }
         ;
 
 directive:
@@ -77,14 +77,14 @@ directive:
         ;
 
 instruction:
-        HALT                                    { std::cout << "HALT\n"; }
+        HALT                                    { std::cout << "HALT\n"; as->haltInstruction(); }
         | INT                                   { std::cout << "INT\n"; }
         | IRET                                  { std::cout << "IRET\n"; }
         | CALL LITERAL                          { std::cout << "CALL " << $2 << std::endl; }
         | CALL SYMBOL                           { std::cout << "CALL " << $2 << std::endl; }
         | RET                                   { std::cout << "RET\n"; }
-        | JMP LITERAL                           { std::cout << "JMP " << $2 << std::endl; }
-        | JMP SYMBOL                            { std::cout << "JMP " << $2 << std::endl; }
+        | JMP LITERAL                           { std::cout << "JMP " << $2 << std::endl; as->jmpInstruction($2); }
+        | JMP SYMBOL                            { std::cout << "JMP " << $2 << std::endl; as->jmpInstruction($2); }
         | BEQ GPR ',' GPR ',' LITERAL           { std::cout << "BEQ " << $2 << " " << $4 << " " << $6 << std::endl; }
         | BEQ GPR ',' GPR ',' SYMBOL            { std::cout << "BEQ " << $2 << " " << $4 << " " << $6 << std::endl; }
         | BNE GPR ',' GPR ',' LITERAL           { std::cout << "BNE " << $2 << " " << $4 << " " << $6 << std::endl; }
@@ -122,10 +122,10 @@ instruction:
         ;
 
 init_list:
-        SYMBOL                                  { std::cout << "INIT_LIST " << $1 << std::endl; }
-        | LITERAL                               { std::cout << "INIT_LIST " << $1 << std::endl; }
-        | init_list ',' SYMBOL                  { std::cout << "INIT_LIST " << $3 << std::endl; }
-        | init_list ',' LITERAL                 { std::cout << "INIT_LIST " << $3 << std::endl; }
+        SYMBOL                                  { std::cout << "INIT_LIST " << $1 << std::endl; as->wordDirectiveSymbol($1); }
+        | LITERAL                               { std::cout << "INIT_LIST " << $1 << std::endl; as->wordDirectiveLiteral($1); }
+        | init_list ',' SYMBOL                  { std::cout << "INIT_LIST " << $3 << std::endl; as->wordDirectiveSymbol($3); }
+        | init_list ',' LITERAL                 { std::cout << "INIT_LIST " << $3 << std::endl; as->wordDirectiveLiteral($3); }
         ;
 
 global_args:

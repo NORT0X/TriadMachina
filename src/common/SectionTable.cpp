@@ -47,6 +47,20 @@ SectionEntry *SectionTable::findSection(std::string name)
     return nullptr;
 }
 
+SectionEntry *SectionTable::findSection(SectionIndex index)
+{
+    if (index < table.size())
+    {
+        return &table[index];
+    }
+    else
+    {
+        std::cerr << "Section index out of bounds: " << index << std::endl;
+    }
+
+    return nullptr;
+}
+
 std::ostream &operator<<(std::ostream &os, const SectionTable &sectionTable)
 {
     os << std::left

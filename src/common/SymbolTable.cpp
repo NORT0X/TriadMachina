@@ -17,7 +17,7 @@ void SymbolTable::addSymbol(SymbolEntry entry, std::string name)
     StringIndex index = this->symbolNames.size();
     this->symbolNames.push_back(name);
 
-    SymbolEntry updatedEntry(index, entry.section_id, entry.bind, entry.value);
+    SymbolEntry updatedEntry(index, entry.section_id, entry.bind, entry.value, entry.defined, entry.flink);
 
     updatedEntry.index = this->id++;
     table.emplace_back(updatedEntry);

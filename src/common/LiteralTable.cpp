@@ -2,9 +2,19 @@
 
 #include "../../inc/common/Elf.hpp"
 
-void LiteralTable::addLiteral(LiteralEntry literal)
+uint32_t LiteralTable::addLiteral(LiteralEntry literal)
 {
+    // find if there is already literal with same value inside pool
+    for (int i = 0; i < this->table.size(); ++i)
+    {
+        if (this->table[i].value == literal.value)
+        {
+            return i * 4;
+        }
+    }
+
     this->table.emplace_back(literal);
+    return (4 * (this->table.size() - 1));
 }
 
 LiteralEntry *LiteralTable::findLiteral(StringIndex index)
@@ -18,4 +28,22 @@ LiteralEntry *LiteralTable::findLiteral(StringIndex index)
     }
 
     return nullptr;
+}
+
+void LiteralTable::clear()
+{
+    this->table.clear();
+}
+
+std::vector<char> LiteralTable::getWriteData()
+{
+    std::vector<char> res;
+    for (LiteralEntry &entry : this->table)
+    {
+        res.emplace_back((char)(entry.value >> 8 * 3));
+        res.emplace_back((char)(entry.value >> 8 * 2));
+        res.emplace_back((char)(entry.value >> 8));
+        res.emplace_back((char)entry.value);
+    }
+    return res;
 }

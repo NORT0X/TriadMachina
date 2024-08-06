@@ -7,7 +7,9 @@ src/common/Elf.cpp \
 src/common/LiteralTable.cpp \
 src/common/SectionTable.cpp \
 src/common/SymbolTable.cpp \
-src/assembler/Assembler.cpp
+src/common/RelaTable.cpp \
+src/assembler/Assembler.cpp \
+src/assembler/AsBackpatch.cpp
 
 HEADER_FILES = \
 inc/common/Elf.hpp \
@@ -16,6 +18,7 @@ inc/common/ForwardRefTable.hpp \
 inc/common/LiteralTable.hpp \
 inc/common/SectionTable.hpp \
 inc/common/SymbolTable.hpp \
+inc/common/RelaTable.hpp \
 inc/assembler/Assembler.hpp \
 misc/flex.hpp \
 misc/parser.hpp

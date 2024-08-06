@@ -1556,7 +1556,7 @@ yyreduce:
   case 12:
 /* Line 1792 of yacc.c  */
 #line 65 "parser.y"
-    { std::cout << (yyvsp[(1) - (2)].sval) << std::endl; }
+    { std::cout << (yyvsp[(1) - (2)].sval) << std::endl; as->label((yyvsp[(1) - (2)].sval)); }
     break;
 
   case 15:
@@ -1592,7 +1592,7 @@ yyreduce:
   case 21:
 /* Line 1792 of yacc.c  */
 #line 80 "parser.y"
-    { std::cout << "HALT\n"; }
+    { std::cout << "HALT\n"; as->haltInstruction(); }
     break;
 
   case 22:
@@ -1628,13 +1628,13 @@ yyreduce:
   case 27:
 /* Line 1792 of yacc.c  */
 #line 86 "parser.y"
-    { std::cout << "JMP " << (yyvsp[(2) - (2)].ival) << std::endl; }
+    { std::cout << "JMP " << (yyvsp[(2) - (2)].ival) << std::endl; as->jmpInstruction((yyvsp[(2) - (2)].ival)); }
     break;
 
   case 28:
 /* Line 1792 of yacc.c  */
 #line 87 "parser.y"
-    { std::cout << "JMP " << (yyvsp[(2) - (2)].sval) << std::endl; }
+    { std::cout << "JMP " << (yyvsp[(2) - (2)].sval) << std::endl; as->jmpInstruction((yyvsp[(2) - (2)].sval)); }
     break;
 
   case 29:
@@ -1844,25 +1844,25 @@ yyreduce:
   case 63:
 /* Line 1792 of yacc.c  */
 #line 125 "parser.y"
-    { std::cout << "INIT_LIST " << (yyvsp[(1) - (1)].sval) << std::endl; }
+    { std::cout << "INIT_LIST " << (yyvsp[(1) - (1)].sval) << std::endl; as->wordDirectiveSymbol((yyvsp[(1) - (1)].sval)); }
     break;
 
   case 64:
 /* Line 1792 of yacc.c  */
 #line 126 "parser.y"
-    { std::cout << "INIT_LIST " << (yyvsp[(1) - (1)].ival) << std::endl; }
+    { std::cout << "INIT_LIST " << (yyvsp[(1) - (1)].ival) << std::endl; as->wordDirectiveLiteral((yyvsp[(1) - (1)].ival)); }
     break;
 
   case 65:
 /* Line 1792 of yacc.c  */
 #line 127 "parser.y"
-    { std::cout << "INIT_LIST " << (yyvsp[(3) - (3)].sval) << std::endl; }
+    { std::cout << "INIT_LIST " << (yyvsp[(3) - (3)].sval) << std::endl; as->wordDirectiveSymbol((yyvsp[(3) - (3)].sval)); }
     break;
 
   case 66:
 /* Line 1792 of yacc.c  */
 #line 128 "parser.y"
-    { std::cout << "INIT_LIST " << (yyvsp[(3) - (3)].ival) << std::endl; }
+    { std::cout << "INIT_LIST " << (yyvsp[(3) - (3)].ival) << std::endl; as->wordDirectiveLiteral((yyvsp[(3) - (3)].ival)); }
     break;
 
   case 67:

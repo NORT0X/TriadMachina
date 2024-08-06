@@ -35,3 +35,6 @@
 
 commit.sh
 *.exe
+
+.vscode/
+.VSCodeCounter/
