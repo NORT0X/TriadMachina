@@ -2,6 +2,7 @@
 #include "../common/LiteralTable.hpp"
 #include "../common/SymbolTable.hpp"
 #include "../common/SectionTable.hpp"
+#include "../common/RelaTable.hpp"
 
 #include <cstdint>
 #include <string>
@@ -41,10 +42,14 @@ public:
 
     void jmpInstruction(uint32_t literal);
     void jmpInstruction(std::string symbol);
+    void branch(int reg1, int reg2, uint32_t literal, uint8_t mode);
+    void branch(int reg1, int reg2, std::string symbol, uint8_t mode);
 
     // Backpatching
     void addFlinkForSymbol(std::string symbolName, uint32_t position);
     void patchFlinksForSymbol(std::string symbolName);
+
+    void addAbsRela(std::string symbol);
 
     // Rembmer literal pool patches inside dips (which means all instructions must be pc relative)
     void poolPatching();
@@ -55,12 +60,15 @@ private:
     SectionIndex currentSection = 0;
     LiteralTable currSecPool;
     std::map<uint32_t, uint32_t> poolBackpatch; // address and offset inside pool to patch
+    std::map<uint32_t, SymbolIndex> poolZeroRela;
 
     std::string outputFile;
     ElfFile eFile;
 
     SymbolTable symbolTable;
     SectionTable sectionTable;
+
+    RelaTable relaTable;
 
     std::vector<ForwardRefEntry> forwardRefs;
 };

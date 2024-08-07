@@ -5,8 +5,6 @@
 .section math
 .word mathAdd, mathDiv
 mathAdd:
-    jmp 0x11223344
-    jmp 0x55667788
     push %r2
     ld [%sp + 0x08], %r1
     ld [%sp + 0x0C], %r2
@@ -28,6 +26,7 @@ mathMul:
     ld [%sp + 0x0C], %r2
     mul %r2, %r1 # r1 used for the result
     pop %r2
+    beq %r1, %r2, mathDiv
     ret
 
 mathDiv:
@@ -40,7 +39,6 @@ mathDiv:
 
 .section test
 methodTest:
-    jmp 0x12345678
     sub %r2, %r1
 
 .end

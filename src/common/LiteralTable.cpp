@@ -4,6 +4,13 @@
 
 uint32_t LiteralTable::addLiteral(LiteralEntry literal)
 {
+    // If it's zero value then just add it because that's for rela
+    if (literal.value == 0)
+    {
+        this->table.emplace_back(literal);
+        return (4 * (this->table.size() - 1));
+    }
+
     // find if there is already literal with same value inside pool
     for (int i = 0; i < this->table.size(); ++i)
     {

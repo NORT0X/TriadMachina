@@ -85,12 +85,12 @@ instruction:
         | RET                                   { std::cout << "RET\n"; }
         | JMP LITERAL                           { std::cout << "JMP " << $2 << std::endl; as->jmpInstruction($2); }
         | JMP SYMBOL                            { std::cout << "JMP " << $2 << std::endl; as->jmpInstruction($2); }
-        | BEQ GPR ',' GPR ',' LITERAL           { std::cout << "BEQ " << $2 << " " << $4 << " " << $6 << std::endl; }
-        | BEQ GPR ',' GPR ',' SYMBOL            { std::cout << "BEQ " << $2 << " " << $4 << " " << $6 << std::endl; }
-        | BNE GPR ',' GPR ',' LITERAL           { std::cout << "BNE " << $2 << " " << $4 << " " << $6 << std::endl; }
-        | BNE GPR ',' GPR ',' SYMBOL            { std::cout << "BNE " << $2 << " " << $4 << " " << $6 << std::endl; }
-        | BGT GPR ',' GPR ',' LITERAL           { std::cout << "BGT " << $2 << " " << $4 << " " << $6 << std::endl; }
-        | BGT GPR ',' GPR ',' SYMBOL            { std::cout << "BGT " << $2 << " " << $4 << " " << $6 << std::endl; }
+        | BEQ GPR ',' GPR ',' LITERAL           { std::cout << "BEQ " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b0001); }
+        | BEQ GPR ',' GPR ',' SYMBOL            { std::cout << "BEQ " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b1001); }
+        | BNE GPR ',' GPR ',' LITERAL           { std::cout << "BNE " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b0010); }
+        | BNE GPR ',' GPR ',' SYMBOL            { std::cout << "BNE " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b1010); }
+        | BGT GPR ',' GPR ',' LITERAL           { std::cout << "BGT " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b0011); }
+        | BGT GPR ',' GPR ',' SYMBOL            { std::cout << "BGT " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b1011); }
         | PUSH GPR                              { std::cout << "PUSH " << $2 << std::endl; }
         | POP GPR                               { std::cout << "POP " << $2 << std::endl; }
         | XCHG GPR ',' GPR                      { std::cout << "XCHG " << $2 << " " << $4 << std::endl; }

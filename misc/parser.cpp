@@ -1640,37 +1640,37 @@ yyreduce:
   case 29:
 /* Line 1792 of yacc.c  */
 #line 88 "parser.y"
-    { std::cout << "BEQ " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].ival) << std::endl; }
+    { std::cout << "BEQ " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].ival) << std::endl; as->branch((yyvsp[(2) - (6)].rval), (yyvsp[(4) - (6)].rval), (yyvsp[(6) - (6)].ival), 0b0001); }
     break;
 
   case 30:
 /* Line 1792 of yacc.c  */
 #line 89 "parser.y"
-    { std::cout << "BEQ " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].sval) << std::endl; }
+    { std::cout << "BEQ " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].sval) << std::endl; as->branch((yyvsp[(2) - (6)].rval), (yyvsp[(4) - (6)].rval), (yyvsp[(6) - (6)].sval), 0b1001); }
     break;
 
   case 31:
 /* Line 1792 of yacc.c  */
 #line 90 "parser.y"
-    { std::cout << "BNE " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].ival) << std::endl; }
+    { std::cout << "BNE " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].ival) << std::endl; as->branch((yyvsp[(2) - (6)].rval), (yyvsp[(4) - (6)].rval), (yyvsp[(6) - (6)].ival), 0b0010); }
     break;
 
   case 32:
 /* Line 1792 of yacc.c  */
 #line 91 "parser.y"
-    { std::cout << "BNE " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].sval) << std::endl; }
+    { std::cout << "BNE " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].sval) << std::endl; as->branch((yyvsp[(2) - (6)].rval), (yyvsp[(4) - (6)].rval), (yyvsp[(6) - (6)].sval), 0b1010); }
     break;
 
   case 33:
 /* Line 1792 of yacc.c  */
 #line 92 "parser.y"
-    { std::cout << "BGT " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].ival) << std::endl; }
+    { std::cout << "BGT " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].ival) << std::endl; as->branch((yyvsp[(2) - (6)].rval), (yyvsp[(4) - (6)].rval), (yyvsp[(6) - (6)].ival), 0b0011); }
     break;
 
   case 34:
 /* Line 1792 of yacc.c  */
 #line 93 "parser.y"
-    { std::cout << "BGT " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].sval) << std::endl; }
+    { std::cout << "BGT " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].sval) << std::endl; as->branch((yyvsp[(2) - (6)].rval), (yyvsp[(4) - (6)].rval), (yyvsp[(6) - (6)].sval), 0b1011); }
     break;
 
   case 35:

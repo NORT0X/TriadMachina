@@ -53,7 +53,7 @@ void Assembler::addFlinkForSymbol(std::string symbolName, uint32_t position)
 
 void Assembler::patchFlinksForSymbol(std::string symbolName)
 {
-    std::cout << "test\n";
+    // Also this only makes sense if symbol somehow is not label (because label has memory value)
     SymbolEntry *symEntry = this->symbolTable.findSymbol(symbolName);
 
     std::vector<char> buff(4, 0);
@@ -62,12 +62,43 @@ void Assembler::patchFlinksForSymbol(std::string symbolName)
     buff[2] = symEntry->value >> 8 * 1;
     buff[3] = symEntry->value;
 
-    uint32_t prev = -1;
     uint32_t index = symEntry->flink;
     while (index < this->forwardRefs.size())
     {
+
         ForwardRefEntry *curr = &this->forwardRefs[index];
-        this->eFile.writeAtPosition(curr->patch, buff);
+
+        // Read current value from file at the patch position
+        std::vector<char> currentValue(4, 0);
+        if (!this->eFile.readAtPosition(curr->patch, currentValue, 4))
+        {
+            std::cerr << "Failed to read current value at position: " << curr->patch << std::endl;
+            return;
+        }
+
+        // Convert current value from vector<char> to uint32_t
+        uint32_t currentVal = (static_cast<uint32_t>(currentValue[0]) << 24) |
+                              (static_cast<uint32_t>(currentValue[1]) << 16) |
+                              (static_cast<uint32_t>(currentValue[2]) << 8) |
+                              static_cast<uint32_t>(currentValue[3]);
+
+        // Perform the bitwise OR operation
+        uint32_t newVal = currentVal | symEntry->value;
+
+        // Prepare the new value as a 4-byte vector
+        std::vector<char> newBuff(4, 0);
+        newBuff[0] = newVal >> 24;
+        newBuff[1] = newVal >> 16;
+        newBuff[2] = newVal >> 8;
+        newBuff[3] = newVal;
+
+        // Write the new value back to the file
+        if (!this->eFile.writeAtPosition(curr->patch, newBuff))
+        {
+            std::cerr << "Failed to write new value at position: " << curr->patch << std::endl;
+            return;
+        }
+
         index = curr->next;
     }
 }
@@ -88,11 +119,33 @@ void Assembler::poolPatching()
         {
             std::cerr << "warning: pool goes out of bounds.";
         }
+
+        // Read current value from file at the patch position
+        std::vector<char> currentValue(2, 0);
+        if (!this->eFile.readAtPosition(position, currentValue, 2))
+        {
+            std::cerr << "Failed to read current value at position: " << position << std::endl;
+            return;
+        }
+
+        // Convert current value from vector<char> to uint32_t
+        uint32_t currentVal = (static_cast<uint32_t>(currentValue[0]) << 8) |
+                              static_cast<uint32_t>(currentValue[1]);
+
+        uint16_t actualOffset = currentVal | offset;
+
         std::vector<char> buff(2, 0);
-        buff[0] = offset >> 8;
-        buff[1] = offset;
+        buff[0] = actualOffset >> 8;
+        buff[1] = actualOffset;
         std::cout << position << '\n';
 
         this->eFile.writeAtPosition(position, buff);
     }
+}
+
+void Assembler::addAbsRela(std::string symbol)
+{
+    SymbolEntry *sym = this->symbolTable.findSymbol(symbol);
+    RelaEntry entry(this->locationCounter, this->currentSection, RelaType::ABS, sym->index, 0);
+    this->relaTable.addEntry(entry);
 }

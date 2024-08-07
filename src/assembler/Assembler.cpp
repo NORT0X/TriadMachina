@@ -24,6 +24,16 @@ void Assembler::end()
         // Size of pool to locationCounter
         this->locationCounter += this->currSecPool.getSizeInBytes();
 
+        // Now add rela to fix pool where zeros are
+        for (const auto &pair : this->poolZeroRela)
+        {
+            uint32_t offsetInPool = pair.first;
+            SymbolIndex symbToRel = pair.second;
+
+            RelaEntry newRela(offsetInPool + lastSection->size, this->currentSection, RelaType::ABS, symbToRel, 0);
+            this->relaTable.addEntry(newRela);
+        }
+
         // Do pool backpatching
         this->poolPatching();
         this->poolBackpatch.clear(); // Delete map boolBackpatching
@@ -93,9 +103,21 @@ void Assembler::sectionDirective(std::string sectionName)
         prevSection->size = this->locationCounter - prevSection->base;
 
         // Write current literal pool at the end of section and clear it for next
-        this->eFile.write(this->currSecPool.getWriteData());
+        std::vector<char> pool = this->currSecPool.getWriteData();
+        this->eFile.write(pool);
+
         // Add size of pool to locationCounter
         this->locationCounter += this->currSecPool.getSizeInBytes();
+
+        // Now add rela to fix pool where zeros are
+        for (const auto &pair : this->poolZeroRela)
+        {
+            uint32_t offsetInPool = pair.first;
+            SymbolIndex symbToRel = pair.second;
+
+            RelaEntry newRela(offsetInPool + prevSection->size, this->currentSection, RelaType::ABS, symbToRel, 0);
+            this->relaTable.addEntry(newRela);
+        }
 
         // Do pool backpatching
         this->poolPatching();
@@ -136,19 +158,15 @@ void Assembler::wordDirectiveSymbol(std::string symbolName)
 
     SymbolEntry *entry = this->symbolTable.findSymbol(symbolName);
 
-    // if symbol is found just do the same with its value as with literal
-    if (entry != nullptr && entry->defined == true)
+    // If entry doesn't exist add it and add rela
+    if (entry == nullptr)
     {
-        buff[0] = entry->value >> 8 * 3;
-        buff[1] = entry->value >> 8 * 2;
-        buff[2] = entry->value >> 8;
-        buff[3] = entry->value;
+        SymbolEntry newEntry(0, -1, SymbolBind::UND, 0);
+        this->symbolTable.addSymbol(newEntry, symbolName);
+        entry = this->symbolTable.findSymbol(symbolName);
     }
-    else
-    {
-        // All zeros will be placed instead while we dont get to definition of symbol
-        this->addFlinkForSymbol(symbolName, locationCounter);
-    }
+
+    this->addAbsRela(symbolName);
 
     this->eFile.write(buff);
     locationCounter += 4;
@@ -380,7 +398,7 @@ void Assembler::haltInstruction()
 void Assembler::jmpInstruction(uint32_t literal)
 {
     std::vector<char> buff(4, 0);
-    if (literal < 0x00000fff)
+    if (literal <= 0x0FFF)
     {
         buff[0] = 0b00110000;
         buff[1] = 0;
@@ -416,5 +434,175 @@ void Assembler::jmpInstruction(uint32_t literal)
 
 void Assembler::jmpInstruction(std::string symbol)
 {
-    // test
+    std::vector<char> buff(4, 0);
+
+    SymbolEntry *entry = this->symbolTable.findSymbol(symbol);
+
+    // This symbol can be:
+    // - undefined
+    if (entry == nullptr)
+    {
+        SymbolEntry newEntry(0, -1, SymbolBind::UND, 0);
+        this->symbolTable.addSymbol(newEntry, symbol);
+        entry = this->symbolTable.findSymbol(symbol);
+    }
+
+    int32_t symbolSection = entry->section_id;
+    uint32_t symbolVal = entry->value;
+
+    // Symbol is in current section
+    if (symbolSection == this->currentSection && entry->defined == true)
+    {
+        int32_t relativeOffset = symbolVal - (this->locationCounter + 4); // relative to the next instruction
+
+        // Check if the relative offset can fit within the signed 12-bit range (-2048 to 2047)
+        if (relativeOffset >= -2048 && relativeOffset <= 2047)
+        {
+            buff[0] = 0b00111000; // JMP opcode with mem
+            buff[1] = 0xF0;
+            buff[2] = (relativeOffset >> 8) & 0x0F;
+            buff[3] = relativeOffset & 0xFF;
+
+            this->eFile.write(buff);
+            this->locationCounter += 4;
+            return;
+        }
+        else
+        {
+            // Error: relative offset out of range. Handle this case appropriately.
+            std::cerr << "Error: Relative offset out of range for JMP in current section\n";
+            return;
+        }
+    }
+
+    // Symbol still not define, than just add jmp pc rel instruction in literal pool
+    if (entry->defined == false)
+    {
+        // Add literal to pool
+        LiteralEntry newLiteral(0);
+
+        uint32_t poolOffset = this->currSecPool.addLiteral(0);
+
+        // Write instruction
+
+        buff[0] = 0b00111000;
+        buff[1] = 0xF0;
+        buff[2] = 0;
+        buff[3] = 0;
+
+        this->eFile.write(buff);
+        this->locationCounter += 4;
+
+        // Add backpatch for poolOffset
+        uint32_t place = this->locationCounter - 2;
+        this->poolBackpatch[place] = poolOffset;
+        this->poolZeroRela[poolOffset] = entry->index;
+    }
+}
+
+void Assembler::branch(int reg1, int reg2, uint32_t literal, uint8_t mode)
+{
+    // Same as jump just we use register for operands and different modes
+
+    std::vector<char> buff(4, 0);
+
+    if (literal <= 0x0FFF)
+    {
+        buff[0] = 0x30 | (mode & 0x0F);
+        buff[1] = 0x0F & static_cast<uint8_t>(reg1);
+        buff[2] = (static_cast<uint8_t>(reg2) << 4) | (0x0F & (literal >> 8));
+        buff[3] = static_cast<uint8_t>(literal);
+
+        this->eFile.write(buff);
+        this->locationCounter += 4;
+        return;
+    }
+
+    // Add literal to pool
+    LiteralEntry newLiteral(literal);
+
+    uint32_t poolOffset = this->currSecPool.addLiteral(newLiteral);
+
+    // Write instruction
+    mode += 8; // we make relative to pc jump now
+
+    buff[0] = 0x30 | (mode & 0x0F);
+    buff[1] = 0xF0 | static_cast<uint8_t>(reg1);
+    buff[2] = static_cast<uint8_t>(reg2) << 4;
+    buff[3] = 0;
+
+    this->eFile.write(buff);
+    this->locationCounter += 4;
+
+    // Add backpatch for poolOffset
+    uint32_t place = this->locationCounter - 2;
+    this->poolBackpatch[place] = poolOffset;
+}
+
+void Assembler::branch(int reg1, int reg2, std::string symbol, uint8_t mode)
+{
+    std::vector<char> buff(4, 0);
+
+    SymbolEntry *entry = this->symbolTable.findSymbol(symbol);
+
+    // This symbol can be:
+    // - undefined
+    if (entry == nullptr)
+    {
+        SymbolEntry newEntry(0, -1, SymbolBind::UND, 0);
+        this->symbolTable.addSymbol(newEntry, symbol);
+        entry = this->symbolTable.findSymbol(symbol);
+    }
+
+    int32_t symbolSection = entry->section_id;
+    uint32_t symbolVal = entry->value;
+
+    // Symbol is in current section
+    if (symbolSection == this->currentSection && entry->defined == true)
+    {
+        int32_t relativeOffset = symbolVal - (this->locationCounter + 4); // relative to the next instruction
+
+        // Check if the relative offset can fit within the signed 12-bit range (-2048 to 2047)
+        if (relativeOffset >= -2048 && relativeOffset <= 2047)
+        {
+            buff[0] = 0x30 | (mode & 0x0F); // JMP opcode with mem
+            buff[1] = 0xF0 | static_cast<uint8_t>(reg1);
+            buff[2] = ((static_cast<uint8_t>(reg2) << 4) | (relativeOffset >> 8) & 0x0F);
+            buff[3] = relativeOffset & 0xFF;
+
+            this->eFile.write(buff);
+            this->locationCounter += 4;
+            return;
+        }
+        else
+        {
+            // Error: relative offset out of range. Handle this case appropriately.
+            std::cerr << "Error: Relative offset out of range for JMP in current section\n";
+            return;
+        }
+    }
+
+    // Symbol still not define, than just add jmp pc rel instruction in literal pool
+    if (entry->defined == false)
+    {
+        // Add literal to pool
+        LiteralEntry newLiteral(0);
+
+        uint32_t poolOffset = this->currSecPool.addLiteral(0);
+
+        // Write instruction
+
+        buff[0] = 0x30 | (mode & 0x0F);
+        buff[1] = 0xF0 | static_cast<uint8_t>(reg1);
+        buff[2] = static_cast<uint8_t>(reg2) << 4;
+        buff[3] = 0;
+
+        this->eFile.write(buff);
+        this->locationCounter += 4;
+
+        // Add backpatch for poolOffset
+        uint32_t place = this->locationCounter - 2;
+        this->poolBackpatch[place] = poolOffset;
+        this->poolZeroRela[poolOffset] = entry->index;
+    }
 }

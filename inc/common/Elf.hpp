@@ -37,7 +37,8 @@ enum SymbolBind
 {
     LOCAL_BIND,
     GLOBAL_BIND,
-    EXTERN_BIND
+    EXTERN_BIND,
+    UND
 };
 
 /* Table Entries */
@@ -99,7 +100,7 @@ struct ForwardRefEntry
 
 enum RelaType
 {
-    DIRECT,
+    ABS,
     PC_REL
 };
 
@@ -109,7 +110,12 @@ struct RelaEntry
     SectionIndex section_id;
     RelaType type;
     SymbolIndex symbol_id;
-    uint32_t addend;
+    int32_t addend;
+
+    RelaEntry(uint32_t offset, SectionIndex section_id, RelaType type, SymbolIndex symbol_id, int32_t addend)
+        : offset(offset), section_id(section_id), type(type), symbol_id(symbol_id), addend(addend)
+    {
+    }
 };
 
 class ElfFile : public File
@@ -121,6 +127,7 @@ public:
     bool write(const std::vector<char> &data) override;
 
     bool writeAtPosition(size_t position, const std::vector<char> &data);
+    bool readAtPosition(size_t position, std::vector<char> &data, size_t size);
 
 private:
     std::fstream fileStream;

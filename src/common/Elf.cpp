@@ -81,3 +81,30 @@ bool ElfFile::writeAtPosition(size_t position, const std::vector<char> &data)
     std::cerr << "File not open for writing" << std::endl;
     return false;
 }
+
+bool ElfFile::readAtPosition(size_t position, std::vector<char> &data, size_t size)
+{
+    if (fileStream.is_open())
+    {
+        // Move to the specified position and read data
+        fileStream.seekg(position, std::ios::beg);
+        if (fileStream.tellg() != static_cast<std::streampos>(position))
+        {
+            std::cerr << "Failed to seek to position: " << position << std::endl;
+            return false;
+        }
+
+        data.resize(size);
+        fileStream.read(data.data(), size);
+        if (!fileStream)
+        {
+            std::cerr << "Failed to read data at position: " << position << std::endl;
+            return false;
+        }
+
+        return true;
+    }
+
+    std::cerr << "File not open for reading" << std::endl;
+    return false;
+}
