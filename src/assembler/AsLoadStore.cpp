@@ -39,6 +39,8 @@ void Assembler::loadLiteral(uint32_t literal, int reg, LiteralMode mode)
         // Add backpatch for poolOffset
         uint32_t place = this->locationCounter + 2;
         this->poolBackpatch[place] = poolOffset;
+
+        break;
     }
     case LiteralMode::MEMORY:
     {
@@ -80,6 +82,7 @@ void Assembler::loadLiteral(uint32_t literal, int reg, LiteralMode mode)
         buff[2] = 0;
         buff[3] = 0;
         this->eFile.write(buff);
+        break;
     }
     }
 
@@ -96,14 +99,16 @@ void Assembler::loadReg(int operandReg, int dstReg, RegMode mode)
     {
 
         buff[0] = 0x91;
-        buff[2] = static_cast<uint8_t>(dstReg << 4) | (operandReg & 0x0F);
+        buff[1] = static_cast<uint8_t>(dstReg << 4) | (operandReg & 0x0F);
         this->eFile.write(buff);
+        break;
     }
     case RegMode::REG_IND:
     {
         buff[0] = 0x92;
-        buff[2] = static_cast<uint8_t>(dstReg << 4) | (operandReg & 0x0F);
+        buff[1] = static_cast<uint8_t>(dstReg << 4) | (operandReg & 0x0F);
         this->eFile.write(buff);
+        break;
     }
     }
     this->locationCounter += 4;
@@ -193,6 +198,8 @@ void Assembler::loadSymbol(std::string symbol, int dstReg, SymbolMode mode)
         uint32_t place = this->locationCounter - 2;
         this->poolBackpatch[place] = poolOffset;
         this->poolZeroRela[poolOffset] = entry->index;
+
+        break;
     }
     case SymbolMode::MEMORY:
     {

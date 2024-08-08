@@ -137,7 +137,7 @@ void Assembler::poolPatching()
         std::vector<char> buff(2, 0);
         buff[0] = actualOffset >> 8;
         buff[1] = actualOffset;
-        std::cout << position << '\n';
+        std::cout << "PATCH: " << actualOffset << '\n';
 
         this->eFile.writeAtPosition(position, buff);
     }
