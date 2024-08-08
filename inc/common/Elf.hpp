@@ -33,6 +33,24 @@ enum
 
 /* -------------- */
 
+enum class LiteralMode // Used for LD and ST instructions
+{
+    VALUE,
+    MEMORY
+};
+
+enum class SymbolMode // Used for LD and ST instructions
+{
+    VALUE,
+    MEMORY
+};
+
+enum RegMode // Used for LD and ST instructions
+{
+    REG_DIR,
+    REG_IND
+};
+
 enum SymbolBind
 {
     LOCAL_BIND,

@@ -45,6 +45,12 @@ public:
     void branch(int reg1, int reg2, uint32_t literal, uint8_t mode);
     void branch(int reg1, int reg2, std::string symbol, uint8_t mode);
 
+    void loadLiteral(uint32_t literal, int reg, LiteralMode mode);
+    void loadReg(int operandReg, int dstReg, RegMode mode);
+    void loadRegLiteral(int operandReg, uint32_t literal, int dstReg);
+
+    void loadSymbol(std::string symbol, int dstReg, SymbolMode mode);
+
     // Backpatching
     void addFlinkForSymbol(std::string symbolName, uint32_t position);
     void patchFlinksForSymbol(std::string symbolName);

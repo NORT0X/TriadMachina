@@ -588,7 +588,7 @@ void Assembler::branch(int reg1, int reg2, std::string symbol, uint8_t mode)
         // Add literal to pool
         LiteralEntry newLiteral(0);
 
-        uint32_t poolOffset = this->currSecPool.addLiteral(0);
+        uint32_t poolOffset = this->currSecPool.addLiteral(newLiteral);
 
         // Write instruction
 

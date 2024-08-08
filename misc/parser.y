@@ -104,13 +104,13 @@ instruction:
         | XOR GPR ',' GPR                       { std::cout << "XOR " << $2 << " " << $4 << std::endl; as->xorInstruction($2, $4); }
         | SHL GPR ',' GPR                       { std::cout << "SHL " << $2 << " " << $4 << std::endl; as->shlInstruction($2, $4); }
         | SHR GPR ',' GPR                       { std::cout << "SHR " << $2 << " " << $4 << std::endl; as->shrInstruction($2, $4); }
-        | LD '$' LITERAL ',' GPR                { std::cout << "LD " << $3 << " " << $5 << std::endl; }
-        | LD '$' SYMBOL ',' GPR                 { std::cout << "LD " << $3 << " " << $5 << std::endl; }
-        | LD  LITERAL ',' GPR                   { std::cout << "LD " << $2 << " " << $4 << std::endl; }
-        | LD  SYMBOL ',' GPR                    { std::cout << "LD " << $2 << " " << $4 << std::endl; }
-        | LD  GPR ',' GPR                       { std::cout << "LD " << $2 << " " << $4 << std::endl; }
-        | LD '[' GPR ']' ',' GPR                { std::cout << "LD " << $3 << " " << $6 << std::endl; }
-        | LD '[' GPR '+' LITERAL ']' ',' GPR    { std::cout << "LD " << $3 << "+" << $5 << $8 << std::endl; }
+        | LD '$' LITERAL ',' GPR                { std::cout << "LD " << $3 << " " << $5 << std::endl; as->loadLiteral($3, $5, LiteralMode::VALUE); }
+        | LD '$' SYMBOL ',' GPR                 { std::cout << "LD " << $3 << " " << $5 << std::endl; as->loadSymbol($3, $5, SymbolMode::VALUE); }
+        | LD  LITERAL ',' GPR                   { std::cout << "LD " << $2 << " " << $4 << std::endl; as->loadLiteral($2, $4, LiteralMode::MEMORY); }
+        | LD  SYMBOL ',' GPR                    { std::cout << "LD " << $2 << " " << $4 << std::endl; as->loadSymbol($2, $4, SymbolMode::MEMORY); }
+        | LD  GPR ',' GPR                       { std::cout << "LD " << $2 << " " << $4 << std::endl; as->loadReg($2, $4, RegMode::REG_DIR); }
+        | LD '[' GPR ']' ',' GPR                { std::cout << "LD " << $3 << " " << $6 << std::endl; as->loadReg($3, $6, RegMode::REG_IND); }
+        | LD '[' GPR '+' LITERAL ']' ',' GPR    { std::cout << "LD " << $3 << "+" << $5 << $8 << std::endl; as->loadRegLiteral($3, $5, $8); }
         | LD '[' GPR '+' SYMBOL ']' ',' GPR     { std::cout << "LD " << $3 << "+" << $5 << $8 << std::endl; }
         | ST GPR ',' LITERAL                    { std::cout << "ST " << $2 << " " << $4 << std::endl; }
         | ST GPR ',' SYMBOL                     { std::cout << "ST " << $2 << " " << $4 << std::endl; }

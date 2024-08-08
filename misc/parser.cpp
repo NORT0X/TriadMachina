@@ -1754,43 +1754,43 @@ yyreduce:
   case 48:
 /* Line 1792 of yacc.c  */
 #line 107 "parser.y"
-    { std::cout << "LD " << (yyvsp[(3) - (5)].ival) << " " << (yyvsp[(5) - (5)].rval) << std::endl; }
+    { std::cout << "LD " << (yyvsp[(3) - (5)].ival) << " " << (yyvsp[(5) - (5)].rval) << std::endl; as->loadLiteral((yyvsp[(3) - (5)].ival), (yyvsp[(5) - (5)].rval), LiteralMode::VALUE); }
     break;
 
   case 49:
 /* Line 1792 of yacc.c  */
 #line 108 "parser.y"
-    { std::cout << "LD " << (yyvsp[(3) - (5)].sval) << " " << (yyvsp[(5) - (5)].rval) << std::endl; }
+    { std::cout << "LD " << (yyvsp[(3) - (5)].sval) << " " << (yyvsp[(5) - (5)].rval) << std::endl; as->loadSymbol((yyvsp[(3) - (5)].sval), (yyvsp[(5) - (5)].rval), SymbolMode::VALUE); }
     break;
 
   case 50:
 /* Line 1792 of yacc.c  */
 #line 109 "parser.y"
-    { std::cout << "LD " << (yyvsp[(2) - (4)].ival) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
+    { std::cout << "LD " << (yyvsp[(2) - (4)].ival) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->loadLiteral((yyvsp[(2) - (4)].ival), (yyvsp[(4) - (4)].rval), LiteralMode::MEMORY); }
     break;
 
   case 51:
 /* Line 1792 of yacc.c  */
 #line 110 "parser.y"
-    { std::cout << "LD " << (yyvsp[(2) - (4)].sval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
+    { std::cout << "LD " << (yyvsp[(2) - (4)].sval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->loadSymbol((yyvsp[(2) - (4)].sval), (yyvsp[(4) - (4)].rval), SymbolMode::MEMORY); }
     break;
 
   case 52:
 /* Line 1792 of yacc.c  */
 #line 111 "parser.y"
-    { std::cout << "LD " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
+    { std::cout << "LD " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->loadReg((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval), RegMode::REG_DIR); }
     break;
 
   case 53:
 /* Line 1792 of yacc.c  */
 #line 112 "parser.y"
-    { std::cout << "LD " << (yyvsp[(3) - (6)].rval) << " " << (yyvsp[(6) - (6)].rval) << std::endl; }
+    { std::cout << "LD " << (yyvsp[(3) - (6)].rval) << " " << (yyvsp[(6) - (6)].rval) << std::endl; as->loadReg((yyvsp[(3) - (6)].rval), (yyvsp[(6) - (6)].rval), RegMode::REG_IND); }
     break;
 
   case 54:
 /* Line 1792 of yacc.c  */
 #line 113 "parser.y"
-    { std::cout << "LD " << (yyvsp[(3) - (8)].rval) << "+" << (yyvsp[(5) - (8)].ival) << (yyvsp[(8) - (8)].rval) << std::endl; }
+    { std::cout << "LD " << (yyvsp[(3) - (8)].rval) << "+" << (yyvsp[(5) - (8)].ival) << (yyvsp[(8) - (8)].rval) << std::endl; as->loadRegLiteral((yyvsp[(3) - (8)].rval), (yyvsp[(5) - (8)].ival), (yyvsp[(8) - (8)].rval)); }
     break;
 
   case 55:

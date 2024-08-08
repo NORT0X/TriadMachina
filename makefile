@@ -9,7 +9,8 @@ src/common/SectionTable.cpp \
 src/common/SymbolTable.cpp \
 src/common/RelaTable.cpp \
 src/assembler/Assembler.cpp \
-src/assembler/AsBackpatch.cpp
+src/assembler/AsBackpatch.cpp \
+src/assembler/AsLoadStore.cpp
 
 HEADER_FILES = \
 inc/common/Elf.hpp \
