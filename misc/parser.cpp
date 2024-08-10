@@ -1598,7 +1598,7 @@ yyreduce:
   case 22:
 /* Line 1792 of yacc.c  */
 #line 81 "parser.y"
-    { std::cout << "INT\n"; }
+    { std::cout << "INT\n"; as->intInstruction(); }
     break;
 
   case 23:
@@ -1610,19 +1610,19 @@ yyreduce:
   case 24:
 /* Line 1792 of yacc.c  */
 #line 83 "parser.y"
-    { std::cout << "CALL " << (yyvsp[(2) - (2)].ival) << std::endl; }
+    { std::cout << "CALL " << (yyvsp[(2) - (2)].ival) << std::endl; as->callInstruction((yyvsp[(2) - (2)].ival)); }
     break;
 
   case 25:
 /* Line 1792 of yacc.c  */
 #line 84 "parser.y"
-    { std::cout << "CALL " << (yyvsp[(2) - (2)].sval) << std::endl; }
+    { std::cout << "CALL " << (yyvsp[(2) - (2)].sval) << std::endl; as->callInstruction((yyvsp[(2) - (2)].sval)); }
     break;
 
   case 26:
 /* Line 1792 of yacc.c  */
 #line 85 "parser.y"
-    { std::cout << "RET\n"; }
+    { std::cout << "RET\n"; as->popInstruction(15); }
     break;
 
   case 27:
@@ -1676,13 +1676,13 @@ yyreduce:
   case 35:
 /* Line 1792 of yacc.c  */
 #line 94 "parser.y"
-    { std::cout << "PUSH " << (yyvsp[(2) - (2)].rval) << std::endl; }
+    { std::cout << "PUSH " << (yyvsp[(2) - (2)].rval) << std::endl; as->pushInstruction((yyvsp[(2) - (2)].rval)); }
     break;
 
   case 36:
 /* Line 1792 of yacc.c  */
 #line 95 "parser.y"
-    { std::cout << "POP " << (yyvsp[(2) - (2)].rval) << std::endl; }
+    { std::cout << "POP " << (yyvsp[(2) - (2)].rval) << std::endl; as->popInstruction((yyvsp[(2) - (2)].rval)); }
     break;
 
   case 37:

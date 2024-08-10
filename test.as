@@ -39,8 +39,10 @@ mathDiv:
 
 .section test
 methodTest:
+    call mathDiv
     ld $mathDiv, %r3
     ld mathDiv, %r3
     sub %r2, %r1
+    ret
 
 .end

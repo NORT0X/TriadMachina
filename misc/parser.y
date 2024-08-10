@@ -78,11 +78,11 @@ directive:
 
 instruction:
         HALT                                    { std::cout << "HALT\n"; as->haltInstruction(); }
-        | INT                                   { std::cout << "INT\n"; }
+        | INT                                   { std::cout << "INT\n"; as->intInstruction(); }
         | IRET                                  { std::cout << "IRET\n"; }
-        | CALL LITERAL                          { std::cout << "CALL " << $2 << std::endl; }
-        | CALL SYMBOL                           { std::cout << "CALL " << $2 << std::endl; }
-        | RET                                   { std::cout << "RET\n"; }
+        | CALL LITERAL                          { std::cout << "CALL " << $2 << std::endl; as->callInstruction($2); }
+        | CALL SYMBOL                           { std::cout << "CALL " << $2 << std::endl; as->callInstruction($2); }
+        | RET                                   { std::cout << "RET\n"; as->popInstruction(15); }
         | JMP LITERAL                           { std::cout << "JMP " << $2 << std::endl; as->jmpInstruction($2); }
         | JMP SYMBOL                            { std::cout << "JMP " << $2 << std::endl; as->jmpInstruction($2); }
         | BEQ GPR ',' GPR ',' LITERAL           { std::cout << "BEQ " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b0001); }
@@ -91,8 +91,8 @@ instruction:
         | BNE GPR ',' GPR ',' SYMBOL            { std::cout << "BNE " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b1010); }
         | BGT GPR ',' GPR ',' LITERAL           { std::cout << "BGT " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b0011); }
         | BGT GPR ',' GPR ',' SYMBOL            { std::cout << "BGT " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b1011); }
-        | PUSH GPR                              { std::cout << "PUSH " << $2 << std::endl; }
-        | POP GPR                               { std::cout << "POP " << $2 << std::endl; }
+        | PUSH GPR                              { std::cout << "PUSH " << $2 << std::endl; as->pushInstruction($2); }
+        | POP GPR                               { std::cout << "POP " << $2 << std::endl; as->popInstruction($2); }
         | XCHG GPR ',' GPR                      { std::cout << "XCHG " << $2 << " " << $4 << std::endl; }
         | ADD GPR ',' GPR                       { std::cout << "ADD " << $2 << " " << $4 << std::endl; as->addInstruction($2, $4); }
         | SUB GPR ',' GPR                       { std::cout << "SUB " << $2 << " " << $4 << std::endl; as->subInstruction($2, $4); }

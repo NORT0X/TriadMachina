@@ -55,6 +55,10 @@ public:
     void storeRegLiteral(int reg_src, int reg_dst, uint32_t literal_dst);
     void storeSymbol(int reg_src, std::string symbol);
 
+    void intInstruction();
+    void callInstruction(uint32_t literal);
+    void callInstruction(std::string symbol);
+
     // Backpatching
     void addFlinkForSymbol(std::string symbolName, uint32_t position);
     void patchFlinksForSymbol(std::string symbolName);
