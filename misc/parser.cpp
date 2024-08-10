@@ -1802,25 +1802,25 @@ yyreduce:
   case 56:
 /* Line 1792 of yacc.c  */
 #line 115 "parser.y"
-    { std::cout << "ST " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].ival) << std::endl; }
+    { std::cout << "ST " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].ival) << std::endl; as->storeLiteral((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].ival)); }
     break;
 
   case 57:
 /* Line 1792 of yacc.c  */
 #line 116 "parser.y"
-    { std::cout << "ST " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].sval) << std::endl; }
+    { std::cout << "ST " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].sval) << std::endl; as->storeSymbol((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].sval)); }
     break;
 
   case 58:
 /* Line 1792 of yacc.c  */
 #line 117 "parser.y"
-    { std::cout << "ST " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(5) - (6)].rval) << std::endl; }
+    { std::cout << "ST " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(5) - (6)].rval) << std::endl; as->storeReg((yyvsp[(2) - (6)].rval), (yyvsp[(5) - (6)].rval)); }
     break;
 
   case 59:
 /* Line 1792 of yacc.c  */
 #line 118 "parser.y"
-    { std::cout << "ST " << (yyvsp[(2) - (8)].rval) << " " << (yyvsp[(5) - (8)].rval) << "+" << (yyvsp[(7) - (8)].ival) << std::endl; }
+    { std::cout << "ST " << (yyvsp[(2) - (8)].rval) << " " << (yyvsp[(5) - (8)].rval) << "+" << (yyvsp[(7) - (8)].ival) << std::endl; as->storeRegLiteral((yyvsp[(2) - (8)].rval), (yyvsp[(5) - (8)].rval), (yyvsp[(7) - (8)].ival)); }
     break;
 
   case 60:

@@ -233,3 +233,114 @@ void Assembler::loadSymbol(std::string symbol, int dstReg, SymbolMode mode)
     }
     }
 }
+
+void Assembler::storeLiteral(int reg, uint32_t literal_dst)
+{
+    // Literal src is memory where we want to store value from register
+    std::vector<char> buff(4, 0);
+
+    if (literal_dst <= 0x0FFF)
+    {
+        buff[0] = 0x80;
+        buff[1] = 0;
+        buff[2] = (reg << 4) | (literal_dst >> 8);
+        buff[3] = literal_dst;
+
+        this->eFile.write(buff);
+        this->locationCounter += 4;
+        return;
+    }
+
+    // In this case we need literal pool
+    // store literal in pool and do mem[mem[pc + offset]] <= reg
+
+    LiteralEntry newLiteral(literal_dst);
+    uint32_t poolOffset = this->currSecPool.addLiteral(newLiteral);
+
+    buff[0] = 0x82;
+    buff[1] = 0xF0;
+    buff[2] = reg << 4 & 0xF0;
+    buff[3] = 0;
+
+    this->eFile.write(buff);
+    this->locationCounter += 4;
+
+    uint32_t place = this->locationCounter - 2;
+    this->poolBackpatch[place] = poolOffset;
+}
+
+void Assembler::storeReg(int reg_src, int reg_dst)
+{
+    // [reg_dst] <= reg_src
+
+    std::vector<char> buff(4, 0);
+
+    buff[0] = 0x80;
+    buff[1] = 0xF0 & (reg_dst << 4);
+    buff[2] = 0xF0 & (reg_src << 4);
+
+    this->eFile.write(buff);
+    this->locationCounter += 4;
+}
+
+void Assembler::storeRegLiteral(int reg_src, int reg_dst, uint32_t literal_dst)
+{
+    std::vector<char> buff(4, 0);
+
+    if (literal_dst < 0x0FFF)
+    {
+        buff[0] = 0x80;
+        buff[1] = reg_dst << 4;
+        buff[2] = (reg_src << 4) | (literal_dst >> 8);
+        buff[3] = literal_dst;
+
+        this->eFile.write(buff);
+        this->locationCounter += 4;
+        return;
+    }
+
+    LiteralEntry newLiteral(literal_dst);
+    uint32_t poolOffset = this->currSecPool.addLiteral(newLiteral);
+
+    buff[0] = 0x82;
+    buff[1] = 0xF0 | (reg_dst);
+    buff[2] = reg_src << 4;
+    buff[3] = 0;
+
+    this->eFile.write(buff);
+    this->locationCounter += 4;
+
+    uint32_t place = this->locationCounter - 2;
+    this->poolBackpatch[place] = poolOffset;
+}
+
+void Assembler::storeSymbol(int reg_src, std::string symbol_dst)
+{
+    std::vector<char> buff(4, 0);
+
+    // Check if symbol is already in symbol table
+    SymbolEntry *entry = this->symbolTable.findSymbol(symbol_dst);
+
+    if (entry == nullptr)
+    {
+        SymbolEntry newSymbol(0, -1, SymbolBind::UND, 0);
+        this->symbolTable.addSymbol(newSymbol, symbol_dst);
+        entry = this->symbolTable.findSymbol(symbol_dst);
+    }
+
+    // Add 0 to literal pool so later value of symbol can be put (in linking part)
+    LiteralEntry newLiteral(0);
+    uint32_t poolOffset = this->currSecPool.addLiteral(newLiteral);
+
+    // Write instruction
+    buff[0] = 0x82;
+    buff[1] = 0xF0;
+    buff[2] = reg_src << 4;
+
+    this->eFile.write(buff);
+    this->locationCounter += 4;
+
+    uint32_t place = this->locationCounter - 2;
+    this->poolBackpatch[place] = poolOffset;
+    this->poolZeroRela[poolOffset] = entry->index;
+}

@@ -112,10 +112,10 @@ instruction:
         | LD '[' GPR ']' ',' GPR                { std::cout << "LD " << $3 << " " << $6 << std::endl; as->loadReg($3, $6, RegMode::REG_IND); }
         | LD '[' GPR '+' LITERAL ']' ',' GPR    { std::cout << "LD " << $3 << "+" << $5 << $8 << std::endl; as->loadRegLiteral($3, $5, $8); }
         | LD '[' GPR '+' SYMBOL ']' ',' GPR     { std::cout << "LD " << $3 << "+" << $5 << $8 << std::endl; }
-        | ST GPR ',' LITERAL                    { std::cout << "ST " << $2 << " " << $4 << std::endl; }
-        | ST GPR ',' SYMBOL                     { std::cout << "ST " << $2 << " " << $4 << std::endl; }
-        | ST GPR ',' '[' GPR ']'                { std::cout << "ST " << $2 << " " << $5 << std::endl; }
-        | ST GPR ',' '[' GPR '+' LITERAL ']'    { std::cout << "ST " << $2 << " " << $5 << "+" << $7 << std::endl; }
+        | ST GPR ',' LITERAL                    { std::cout << "ST " << $2 << " " << $4 << std::endl; as->storeLiteral($2, $4); }
+        | ST GPR ',' SYMBOL                     { std::cout << "ST " << $2 << " " << $4 << std::endl; as->storeSymbol($2, $4); }
+        | ST GPR ',' '[' GPR ']'                { std::cout << "ST " << $2 << " " << $5 << std::endl; as->storeReg($2, $5); }
+        | ST GPR ',' '[' GPR '+' LITERAL ']'    { std::cout << "ST " << $2 << " " << $5 << "+" << $7 << std::endl; as->storeRegLiteral($2, $5, $7); }
         | ST GPR ',' '[' GPR '+' SYMBOL ']'     { std::cout << "ST " << $2 << " " << $5 << "+" << $7 << std::endl; }
         | CSRRD CSR ',' GPR                     { std::cout << "CSRRD " << $2 << " " << $4 << std::endl; }
         | CSRWR GPR ',' CSR                     { std::cout << "CSRWR " << $2 << " " << $4 << std::endl; }

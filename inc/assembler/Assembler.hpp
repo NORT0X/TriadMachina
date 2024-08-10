@@ -48,8 +48,12 @@ public:
     void loadLiteral(uint32_t literal, int reg, LiteralMode mode);
     void loadReg(int operandReg, int dstReg, RegMode mode);
     void loadRegLiteral(int operandReg, uint32_t literal, int dstReg);
-
     void loadSymbol(std::string symbol, int dstReg, SymbolMode mode);
+
+    void storeLiteral(int reg, uint32_t literal_dst);
+    void storeReg(int reg_src, int reg_dst);
+    void storeRegLiteral(int reg_src, int reg_dst, uint32_t literal_dst);
+    void storeSymbol(int reg_src, std::string symbol);
 
     // Backpatching
     void addFlinkForSymbol(std::string symbolName, uint32_t position);
