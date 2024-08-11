@@ -25,23 +25,6 @@ public:
 
     void insertInstruction(MInstruction instruction);
 
-    void addInstruction(int regA, int regB);
-    void subInstruction(int regA, int regB);
-    void mulInstruction(int regA, int regB);
-    void divInstruction(int regA, int regB);
-
-    void notInstruction(int regA);
-    void andInstruction(int regA, int regB);
-    void orInstruction(int regA, int regB);
-    void xorInstruction(int regA, int regB);
-    void shlInstruction(int regA, int regB);
-    void shrInstruction(int regA, int regB);
-
-    void popInstruction(int regA);
-    void pushInstruction(int regB);
-
-    void haltInstruction();
-
     void jmpInstruction(uint32_t literal);
     void jmpInstruction(std::string symbol);
     void branch(int reg1, int reg2, uint32_t literal, uint8_t mode);
@@ -57,14 +40,8 @@ public:
     void storeRegLiteral(int reg_src, int reg_dst, uint32_t literal_dst);
     void storeSymbol(int reg_src, std::string symbol);
 
-    void intInstruction();
     void callInstruction(uint32_t literal);
     void callInstruction(std::string symbol);
-
-    void csrrdInstruction(int csrReg, int gprReg);
-    void csrwrInstruction(int gprReg, int csrReg);
-
-    void xchgInstruction(int srcReg, int dstReg);
 
     void iretInstruction();
 

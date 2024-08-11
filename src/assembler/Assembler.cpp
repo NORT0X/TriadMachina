@@ -214,128 +214,13 @@ void Assembler::insertInstruction(MInstruction instruction)
     this->locationCounter += 4;
 }
 
-void Assembler::addInstruction(int regA, int regB)
-{
-    std::cout << "Test " << regA << regB << '\n';
-
-    MInstruction instr(OPCODE::ARITHMETIC, 0, regB, regB, regA, 0);
-    this->insertInstruction(instr);
-}
-
-void Assembler::subInstruction(int regA, int regB)
-{
-    std::cout << "Test " << regA << regB << '\n';
-
-    MInstruction instr(OPCODE::ARITHMETIC, 1, regB, regB, regA, 0);
-    this->insertInstruction(instr);
-}
-
-void Assembler::mulInstruction(int regA, int regB)
-{
-    std::cout << "Test " << regA << regB << '\n';
-
-    MInstruction instr(OPCODE::ARITHMETIC, 2, regB, regB, regA, 0);
-    this->insertInstruction(instr);
-}
-
-void Assembler::divInstruction(int regA, int regB)
-{
-    std::cout << "Test " << regA << regB << '\n';
-
-    MInstruction instr(OPCODE::ARITHMETIC, 3, regB, regB, regA, 0);
-    this->insertInstruction(instr);
-}
-
-void Assembler::notInstruction(int regA)
-{
-    std::cout << "Test " << regA << '\n';
-
-    MInstruction instr(OPCODE::LOGIC, 0, regA, regA, 0, 0);
-    this->insertInstruction(instr);
-}
-
-void Assembler::andInstruction(int regA, int regB)
-{
-    std::cout << "Test " << regA << regB << '\n';
-
-    MInstruction instr(OPCODE::LOGIC, 1, regB, regB, regA, 0);
-    this->insertInstruction(instr);
-}
-
-void Assembler::orInstruction(int regA, int regB)
-{
-    std::cout << "Test " << regA << regB << '\n';
-
-    MInstruction instr(OPCODE::LOGIC, 2, regB, regB, regA, 0);
-    this->insertInstruction(instr);
-}
-
-void Assembler::xorInstruction(int regA, int regB)
-{
-    std::cout << "Test " << regA << regB << '\n';
-
-    MInstruction instr(OPCODE::LOGIC, 3, regB, regB, regA, 0);
-    this->insertInstruction(instr);
-}
-
-void Assembler::shlInstruction(int regA, int regB)
-{
-    std::cout << "Test " << regA << regB << '\n';
-
-    MInstruction instr(OPCODE::SHIFT, 0, regB, regB, regA, 0);
-    this->insertInstruction(instr);
-}
-
-void Assembler::shrInstruction(int regA, int regB)
-{
-    std::cout << "Test " << regA << regB << '\n';
-
-    MInstruction instr(OPCODE::SHIFT, 1, regB, regB, regA, 0);
-    this->insertInstruction(instr);
-}
-
-void Assembler::popInstruction(int regA)
-{
-    // regA <= mem[sp]
-    // sp = sp + 4
-    MInstruction instr(OPCODE::LOAD, 3, regA, 0x0E, 0, 4);
-    this->insertInstruction(instr);
-}
-
-void Assembler::pushInstruction(int regB)
-{
-    // sp = sp - 4
-    // mem[sp] <= regB;
-    std::vector<char> buff(4, 0);
-
-    buff[0] = 0x81;
-    buff[1] = 0xE0;
-    buff[2] = regB << 4 | 0x0F;
-    buff[3] = static_cast<uint8_t>(-4);
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
-}
-
-void Assembler::haltInstruction()
-{
-    std::vector<char> buff(4, 0);
-
-    this->eFile.write(buff);
-}
-
 void Assembler::jmpInstruction(uint32_t literal)
 {
     std::vector<char> buff(4, 0);
     if (literal <= 0x0FFF)
     {
-        buff[0] = 0b00110000;
-        buff[1] = 0;
-        buff[2] = (literal >> 8) & 0x0F;
-        buff[3] = literal;
-
-        this->eFile.write(buff);
-        this->locationCounter += 4;
+        MInstruction instr(OPCODE::JMP, 0, 0, 0, 0, literal);
+        this->insertInstruction(instr);
         return;
     }
     // In other case we have to put in literal pool for current section and that's it
@@ -348,13 +233,8 @@ void Assembler::jmpInstruction(uint32_t literal)
     uint32_t poolOffset = this->currSecPool.addLiteral(newLiteral);
 
     // Write instruction
-    buff[0] = 0b00111000;
-    buff[1] = 0xF0;
-    buff[2] = 0;
-    buff[3] = 0;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::JMP, 8, PC, 0, 0, 0);
+    this->insertInstruction(instr);
 
     // Add backpatch for poolOffset
     uint32_t place = this->locationCounter - 2;
@@ -387,13 +267,8 @@ void Assembler::jmpInstruction(std::string symbol)
         // Check if the relative offset can fit within the signed 12-bit range (-2048 to 2047)
         if (relativeOffset >= -2048 && relativeOffset <= 2047)
         {
-            buff[0] = 0b00111000; // JMP opcode with mem
-            buff[1] = 0xF0;
-            buff[2] = (relativeOffset >> 8) & 0x0F;
-            buff[3] = relativeOffset & 0xFF;
-
-            this->eFile.write(buff);
-            this->locationCounter += 4;
+            MInstruction instr(OPCODE::JMP, 8, PC, 0, 0, relativeOffset);
+            this->insertInstruction(instr);
             return;
         }
         else
@@ -412,14 +287,8 @@ void Assembler::jmpInstruction(std::string symbol)
     uint32_t poolOffset = this->currSecPool.addLiteral(0);
 
     // Write instruction
-
-    buff[0] = 0b00111000;
-    buff[1] = 0xF0;
-    buff[2] = 0;
-    buff[3] = 0;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::JMP, 8, PC, 0, 0, 0);
+    this->insertInstruction(instr);
 
     // Add backpatch for poolOffset
     uint32_t place = this->locationCounter - 2;
@@ -435,13 +304,8 @@ void Assembler::branch(int reg1, int reg2, uint32_t literal, uint8_t mode)
 
     if (literal <= 0x0FFF)
     {
-        buff[0] = 0x30 | (mode & 0x0F);
-        buff[1] = 0x0F & static_cast<uint8_t>(reg1);
-        buff[2] = (static_cast<uint8_t>(reg2) << 4) | (0x0F & (literal >> 8));
-        buff[3] = static_cast<uint8_t>(literal);
-
-        this->eFile.write(buff);
-        this->locationCounter += 4;
+        MInstruction instr(OPCODE::JMP, mode, 0, reg1, reg2, literal);
+        this->insertInstruction(instr);
         return;
     }
 
@@ -453,13 +317,8 @@ void Assembler::branch(int reg1, int reg2, uint32_t literal, uint8_t mode)
     // Write instruction
     mode += 8; // we make relative to pc jump now
 
-    buff[0] = 0x30 | (mode & 0x0F);
-    buff[1] = 0xF0 | static_cast<uint8_t>(reg1);
-    buff[2] = static_cast<uint8_t>(reg2) << 4;
-    buff[3] = 0;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::JMP, mode, PC, reg1, reg2, 0);
+    this->insertInstruction(instr);
 
     // Add backpatch for poolOffset
     uint32_t place = this->locationCounter - 2;
@@ -492,13 +351,8 @@ void Assembler::branch(int reg1, int reg2, std::string symbol, uint8_t mode)
         // Check if the relative offset can fit within the signed 12-bit range (-2048 to 2047)
         if (relativeOffset >= -2048 && relativeOffset <= 2047)
         {
-            buff[0] = 0x30 | (mode & 0x0F); // JMP opcode with mem
-            buff[1] = 0xF0 | static_cast<uint8_t>(reg1);
-            buff[2] = ((static_cast<uint8_t>(reg2) << 4) | (relativeOffset >> 8) & 0x0F);
-            buff[3] = relativeOffset & 0xFF;
-
-            this->eFile.write(buff);
-            this->locationCounter += 4;
+            MInstruction instr(OPCODE::JMP, mode, PC, reg1, reg2, relativeOffset);
+            this->insertInstruction(instr);
             return;
         }
         else
@@ -517,29 +371,15 @@ void Assembler::branch(int reg1, int reg2, std::string symbol, uint8_t mode)
     uint32_t poolOffset = this->currSecPool.addLiteral(newLiteral);
 
     // Write instruction
+    mode += 8;
 
-    buff[0] = 0x30 | (mode & 0x0F);
-    buff[1] = 0xF0 | static_cast<uint8_t>(reg1);
-    buff[2] = static_cast<uint8_t>(reg2) << 4;
-    buff[3] = 0;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::JMP, mode, PC, reg1, reg2, 0);
+    this->insertInstruction(instr);
 
     // Add backpatch for poolOffset
     uint32_t place = this->locationCounter - 2;
     this->poolBackpatch[place] = poolOffset;
     this->poolZeroRela[poolOffset] = entry->index;
-}
-
-void Assembler::intInstruction()
-{
-    std::vector<char> buff(4, 0);
-
-    buff[0] = 0x10;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
 }
 
 void Assembler::callInstruction(uint32_t literal)
@@ -548,13 +388,8 @@ void Assembler::callInstruction(uint32_t literal)
 
     if (literal <= 0x0FFF)
     {
-        buff[0] = 0x20;
-        buff[1] = 0;
-        buff[2] = literal >> 8;
-        buff[3] = literal;
-
-        this->eFile.write(buff);
-        this->locationCounter += 4;
+        MInstruction instr(OPCODE::CALL, 0, 0, 0, 0, literal);
+        this->insertInstruction(instr);
         return;
     }
 
@@ -562,13 +397,8 @@ void Assembler::callInstruction(uint32_t literal)
     std::cout << literal << '\n';
     uint32_t poolOffset = this->currSecPool.addLiteral(newLiteral);
 
-    buff[0] = 0x21;
-    buff[1] = 0xF0;
-    buff[2] = 0;
-    buff[3] = 0;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::CALL, 1, PC, 0, 0, 0);
+    this->insertInstruction(instr);
 
     uint32_t place = this->locationCounter - 2;
     this->poolBackpatch[place] = poolOffset;
@@ -596,13 +426,8 @@ void Assembler::callInstruction(std::string symbol)
 
         if (relativeOffset >= -2048 && relativeOffset <= 2047)
         {
-            buff[0] = 0x20;
-            buff[1] = 0xF0;
-            buff[2] = (relativeOffset >> 8) & 0x0F;
-            buff[3] = relativeOffset;
-
-            this->eFile.write(buff);
-            this->locationCounter += 4;
+            MInstruction instr(OPCODE::CALL, 0, PC, 0, 0, relativeOffset);
+            this->insertInstruction(instr);
             return;
         }
         else
@@ -617,70 +442,20 @@ void Assembler::callInstruction(std::string symbol)
 
     uint32_t poolOffset = this->currSecPool.addLiteral(0);
 
-    buff[0] = 0x21;
-    buff[1] = 0xF0;
-    buff[2] = 0;
-    buff[3] = 0;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::CALL, 1, PC, 0, 0, 0);
 
     uint32_t place = this->locationCounter - 2;
     this->poolBackpatch[place] = poolOffset;
     this->poolZeroRela[poolOffset] = entry->index;
 }
 
-void Assembler::csrrdInstruction(int csrReg, int gprReg)
-{
-    std::vector<char> buff(4, 0);
-
-    buff[0] = 0x90;
-    buff[1] = gprReg << 4 | (csrReg & 0x0F);
-
-    eFile.write(buff);
-    this->locationCounter += 4;
-}
-
-void Assembler::csrwrInstruction(int gprReg, int csrReg)
-{
-    std::vector<char> buff(4, 0);
-
-    buff[0] = 0x94;
-    buff[1] = csrReg << 4 | (gprReg & 0x0F);
-
-    eFile.write(buff);
-    this->locationCounter += 4;
-}
-
-void Assembler::xchgInstruction(int srcReg, int dstReg)
-{
-    std::vector<char> buff(4, 0);
-
-    buff[0] = 0x40;
-    buff[1] = 0x0F & dstReg;
-    buff[2] = srcReg << 4;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
-}
-
 void Assembler::iretInstruction()
 {
     std::vector<char> buff(4, 0);
 
-    buff[0] = 0x96;
-    buff[1] = STATUS << 4 | 0x0E;
-    buff[2] = 0;
-    buff[3] = 4;
+    MInstruction instr(OPCODE::LOAD, 6, STATUS, SP, 0, 4);
+    this->insertInstruction(instr);
 
-    this->eFile.write(buff);
-    this->locationCounter += 4;
-
-    buff[0] = 0x93;
-    buff[1] = 0xFE;
-    buff[2] = 0;
-    buff[3] = 8;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr2(OPCODE::LOAD, 3, PC, SP, 0, 8);
+    this->insertInstruction(instr2);
 }

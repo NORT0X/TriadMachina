@@ -6,8 +6,6 @@
 
 void Assembler::loadLiteral(uint32_t literal, int reg, LiteralMode mode)
 {
-    std::vector<char> buff(4, 0);
-
     switch (mode)
     {
     case LiteralMode::VALUE:
@@ -17,11 +15,8 @@ void Assembler::loadLiteral(uint32_t literal, int reg, LiteralMode mode)
         // If value is less than 0x0fff we don't need pool
         if (literal <= 0x0FFF)
         {
-            buff[0] = 0x91;
-            buff[1] = static_cast<uint8_t>(reg << 4);
-            buff[2] = 0x0F & (literal >> 8);
-            buff[3] = literal;
-            this->eFile.write(buff);
+            MInstruction instr(OPCODE::LOAD, 1, reg, 0, 0, literal);
+            this->insertInstruction(instr);
             break;
         }
 
@@ -29,15 +24,11 @@ void Assembler::loadLiteral(uint32_t literal, int reg, LiteralMode mode)
         LiteralEntry newLiteral(literal);
         uint32_t poolOffset = this->currSecPool.addLiteral(newLiteral);
 
-        buff[0] = 0x92;
-        buff[1] = 0x0F | static_cast<uint8_t>(reg << 4);
-        buff[2] = 0;
-        buff[3] = 0;
-
-        this->eFile.write(buff);
+        MInstruction instr(OPCODE::LOAD, 2, reg, PC, 0, 0);
+        this->insertInstruction(instr);
 
         // Add backpatch for poolOffset
-        uint32_t place = this->locationCounter + 2;
+        uint32_t place = this->locationCounter - 2;
         this->poolBackpatch[place] = poolOffset;
 
         break;
@@ -48,11 +39,8 @@ void Assembler::loadLiteral(uint32_t literal, int reg, LiteralMode mode)
 
         if (literal <= 0x0FFF)
         {
-            buff[0] = 0x92;
-            buff[1] = static_cast<uint8_t>(reg << 4);
-            buff[2] = 0x0F & (literal >> 8);
-            buff[3] = literal;
-            this->eFile.write(buff);
+            MInstruction instr(OPCODE::LOAD, 2, reg, 0, 0, literal);
+            this->insertInstruction(instr);
             break;
         }
 
@@ -63,13 +51,8 @@ void Assembler::loadLiteral(uint32_t literal, int reg, LiteralMode mode)
         LiteralEntry newLiteral(literal);
         uint32_t poolOffset = this->currSecPool.addLiteral(newLiteral);
 
-        buff[0] = 0x92;
-        buff[1] = 0x0F | static_cast<uint8_t>(reg << 4);
-        buff[2] = 0;
-        buff[3] = 0;
-
-        this->eFile.write(buff);
-        this->locationCounter += 4; // since there will be one more instruction
+        MInstruction instr(OPCODE::LOAD, 2, reg, PC, 0, 0);
+        this->insertInstruction(instr);
 
         // Add backpatch for poolOffset
         uint32_t place = this->locationCounter - 2;
@@ -77,57 +60,39 @@ void Assembler::loadLiteral(uint32_t literal, int reg, LiteralMode mode)
 
         // Now do reg <= [reg] --- [reg] will be [literal_value]
 
-        buff[0] = 0x92;
-        buff[1] = static_cast<uint8_t>(reg << 4) | (reg & 0x0F);
-        buff[2] = 0;
-        buff[3] = 0;
-        this->eFile.write(buff);
+        MInstruction instr2(OPCODE::LOAD, 2, reg, reg, 0, 0);
+        this->insertInstruction(instr2);
         break;
     }
     }
-
-    this->locationCounter += 4;
 }
 
 void Assembler::loadReg(int operandReg, int dstReg, RegMode mode)
 {
-    std::vector<char> buff(4, 0);
-
     switch (mode)
     {
     case RegMode::REG_DIR:
     {
-
-        buff[0] = 0x91;
-        buff[1] = static_cast<uint8_t>(dstReg << 4) | (operandReg & 0x0F);
-        this->eFile.write(buff);
+        MInstruction instr(OPCODE::LOAD, 1, dstReg, operandReg, 0, 0);
+        this->insertInstruction(instr);
         break;
     }
     case RegMode::REG_IND:
     {
-        buff[0] = 0x92;
-        buff[1] = static_cast<uint8_t>(dstReg << 4) | (operandReg & 0x0F);
-        this->eFile.write(buff);
+        MInstruction instr(OPCODE::LOAD, 2, dstReg, operandReg, 0, 0);
+        this->insertInstruction(instr);
         break;
     }
     }
-    this->locationCounter += 4;
 }
 
 void Assembler::loadRegLiteral(int operandReg, uint32_t literal, int dstReg)
 {
-    std::vector<char> buff(4, 0);
-
     // Check if we need literal pool
     if (literal <= 0x0FFF)
     {
-        buff[0] = 0x92;
-        buff[1] = static_cast<uint8_t>(dstReg << 4) | (operandReg & 0x0F);
-        buff[2] = 0x0F & (literal >> 8);
-        buff[3] = literal;
-        this->eFile.write(buff);
-
-        this->locationCounter += 4;
+        MInstruction instr(OPCODE::LOAD, 2, dstReg, operandReg, 0, literal);
+        this->insertInstruction(instr);
         return;
     }
 
@@ -138,13 +103,8 @@ void Assembler::loadRegLiteral(int operandReg, uint32_t literal, int dstReg)
     LiteralEntry newLiteral(literal);
     uint32_t poolOffset = this->currSecPool.addLiteral(newLiteral);
 
-    buff[0] = 0x92;
-    buff[1] = 0x0F | static_cast<uint8_t>(dstReg << 4);
-    buff[2] = 0;
-    buff[3] = 0;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4; // since there will be one more instruction
+    MInstruction instr(OPCODE::LOAD, 2, dstReg, PC, 0, 0);
+    this->insertInstruction(instr);
 
     // Add backpatch for poolOffset
     uint32_t place = this->locationCounter - 2;
@@ -152,19 +112,13 @@ void Assembler::loadRegLiteral(int operandReg, uint32_t literal, int dstReg)
 
     // Now do reg <= [reg + reg]
 
-    buff[0] = 0x92;
-    buff[1] = (dstReg << 4) | dstReg;
-    buff[2] = operandReg << 4;
-    buff[3] = 0;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr2(OPCODE::LOAD, 2, dstReg, dstReg, operandReg, 0);
+    this->insertInstruction(instr2);
 }
 
 void Assembler::loadSymbol(std::string symbol, int dstReg, SymbolMode mode)
 {
     // Here we put symbol just in rela table because we don't know label value
-    std::vector<char> buff(4, 0);
 
     // Check if symbol is already in symbol table
     SymbolEntry *entry = this->symbolTable.findSymbol(symbol);
@@ -186,13 +140,8 @@ void Assembler::loadSymbol(std::string symbol, int dstReg, SymbolMode mode)
 
         // Write instruction
 
-        buff[0] = 0x92;
-        buff[1] = (dstReg << 4) | 0x0F;
-        buff[2] = 0;
-        buff[3] = 0;
-
-        this->eFile.write(buff);
-        this->locationCounter += 4;
+        MInstruction instr(OPCODE::LOAD, 2, dstReg, PC, 0, 0);
+        this->insertInstruction(instr);
 
         // Add backpatch for poolOffset and rela
         uint32_t place = this->locationCounter - 2;
@@ -210,13 +159,8 @@ void Assembler::loadSymbol(std::string symbol, int dstReg, SymbolMode mode)
         LiteralEntry newLiteral(0);
         uint32_t poolOffset = this->currSecPool.addLiteral(newLiteral);
 
-        buff[0] = 0x92;
-        buff[1] = 0x0F | static_cast<uint8_t>(dstReg << 4);
-        buff[2] = 0;
-        buff[3] = 0;
-
-        this->eFile.write(buff);
-        this->locationCounter += 4;
+        MInstruction instr(OPCODE::LOAD, 2, dstReg, PC, 0, 0);
+        this->insertInstruction(instr);
 
         // Add backpatch of poolOffset and rela
         uint32_t place = this->locationCounter - 2;
@@ -224,12 +168,8 @@ void Assembler::loadSymbol(std::string symbol, int dstReg, SymbolMode mode)
         this->poolZeroRela[poolOffset] = entry->index;
 
         // Now do reg <= [reg] --- [reg] will be [symbol_value]
-        buff[0] = 0x92;
-        buff[1] = static_cast<uint8_t>(dstReg << 4) | (dstReg & 0x0F);
-        buff[2] = 0;
-        buff[3] = 0;
-        this->eFile.write(buff);
-        this->locationCounter += 4;
+        MInstruction instr2(OPCODE::LOAD, 2, dstReg, dstReg, 0, 0);
+        this->insertInstruction(instr2);
     }
     }
 }
@@ -237,17 +177,11 @@ void Assembler::loadSymbol(std::string symbol, int dstReg, SymbolMode mode)
 void Assembler::storeLiteral(int reg, uint32_t literal_dst)
 {
     // Literal src is memory where we want to store value from register
-    std::vector<char> buff(4, 0);
 
     if (literal_dst <= 0x0FFF)
     {
-        buff[0] = 0x80;
-        buff[1] = 0;
-        buff[2] = (reg << 4) | (literal_dst >> 8);
-        buff[3] = literal_dst;
-
-        this->eFile.write(buff);
-        this->locationCounter += 4;
+        MInstruction instr(OPCODE::STORE, 0, 0, 0, reg, literal_dst);
+        this->insertInstruction(instr);
         return;
     }
 
@@ -257,13 +191,8 @@ void Assembler::storeLiteral(int reg, uint32_t literal_dst)
     LiteralEntry newLiteral(literal_dst);
     uint32_t poolOffset = this->currSecPool.addLiteral(newLiteral);
 
-    buff[0] = 0x82;
-    buff[1] = 0xF0;
-    buff[2] = reg << 4 & 0xF0;
-    buff[3] = 0;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::STORE, 2, PC, 0, reg, 0);
+    this->insertInstruction(instr);
 
     uint32_t place = this->locationCounter - 2;
     this->poolBackpatch[place] = poolOffset;
@@ -273,42 +202,23 @@ void Assembler::storeReg(int reg_src, int reg_dst)
 {
     // [reg_dst] <= reg_src
 
-    std::vector<char> buff(4, 0);
-
-    buff[0] = 0x80;
-    buff[1] = 0xF0 & (reg_dst << 4);
-    buff[2] = 0xF0 & (reg_src << 4);
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::STORE, 0, reg_dst, 0, reg_src, 0);
+    this->insertInstruction(instr);
 }
 
 void Assembler::storeRegLiteral(int reg_src, int reg_dst, uint32_t literal_dst)
 {
-    std::vector<char> buff(4, 0);
-
     if (literal_dst < 0x0FFF)
     {
-        buff[0] = 0x80;
-        buff[1] = reg_dst << 4;
-        buff[2] = (reg_src << 4) | (literal_dst >> 8);
-        buff[3] = literal_dst;
-
-        this->eFile.write(buff);
-        this->locationCounter += 4;
+        MInstruction instr(OPCODE::STORE, 0, reg_dst, 0, reg_src, literal_dst);
+        this->insertInstruction(instr);
         return;
     }
 
     LiteralEntry newLiteral(literal_dst);
     uint32_t poolOffset = this->currSecPool.addLiteral(newLiteral);
 
-    buff[0] = 0x82;
-    buff[1] = 0xF0 | (reg_dst);
-    buff[2] = reg_src << 4;
-    buff[3] = 0;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::STORE, 2, PC, reg_dst, reg_src, 0);
 
     uint32_t place = this->locationCounter - 2;
     this->poolBackpatch[place] = poolOffset;
@@ -316,8 +226,6 @@ void Assembler::storeRegLiteral(int reg_src, int reg_dst, uint32_t literal_dst)
 
 void Assembler::storeSymbol(int reg_src, std::string symbol_dst)
 {
-    std::vector<char> buff(4, 0);
-
     // Check if symbol is already in symbol table
     SymbolEntry *entry = this->symbolTable.findSymbol(symbol_dst);
 
@@ -333,12 +241,8 @@ void Assembler::storeSymbol(int reg_src, std::string symbol_dst)
     uint32_t poolOffset = this->currSecPool.addLiteral(newLiteral);
 
     // Write instruction
-    buff[0] = 0x82;
-    buff[1] = 0xF0;
-    buff[2] = reg_src << 4;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::STORE, 2, PC, 0, reg_src, 0);
+    this->insertInstruction(instr);
 
     uint32_t place = this->locationCounter - 2;
     this->poolBackpatch[place] = poolOffset;

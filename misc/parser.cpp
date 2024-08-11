@@ -1592,13 +1592,13 @@ yyreduce:
   case 21:
 /* Line 1792 of yacc.c  */
 #line 80 "parser.y"
-    { std::cout << "HALT\n"; as->haltInstruction(); }
+    { MInstruction instr(OPCODE::HALT, 0, 0, 0, 0 ,0); as->insertInstruction(instr); }
     break;
 
   case 22:
 /* Line 1792 of yacc.c  */
 #line 81 "parser.y"
-    { std::cout << "INT\n"; as->intInstruction(); }
+    { MInstruction instr(OPCODE::INT, 0, 0, 0, 0, 0); as->insertInstruction(instr); }
     break;
 
   case 23:
@@ -1622,7 +1622,7 @@ yyreduce:
   case 26:
 /* Line 1792 of yacc.c  */
 #line 85 "parser.y"
-    { std::cout << "RET\n"; as->popInstruction(15); }
+    { MInstruction instr(OPCODE::LOAD, 3, PC, SP, 0, 4); as->insertInstruction(instr); }
     break;
 
   case 27:
@@ -1676,79 +1676,79 @@ yyreduce:
   case 35:
 /* Line 1792 of yacc.c  */
 #line 94 "parser.y"
-    { std::cout << "PUSH " << (yyvsp[(2) - (2)].rval) << std::endl; as->pushInstruction((yyvsp[(2) - (2)].rval)); }
+    { MInstruction instr(OPCODE::STORE, 1, SP, 0, (yyvsp[(2) - (2)].rval), -4); as->insertInstruction(instr); }
     break;
 
   case 36:
 /* Line 1792 of yacc.c  */
 #line 95 "parser.y"
-    { std::cout << "POP " << (yyvsp[(2) - (2)].rval) << std::endl; as->popInstruction((yyvsp[(2) - (2)].rval)); }
+    { MInstruction instr(OPCODE::LOAD, 3, (yyvsp[(2) - (2)].rval), 0x0E, 0, 4); as->insertInstruction(instr); }
     break;
 
   case 37:
 /* Line 1792 of yacc.c  */
 #line 96 "parser.y"
-    { std::cout << "XCHG " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->xchgInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
+    { MInstruction instr(OPCODE::XCHG, 0, 0, (yyvsp[(4) - (4)].rval), (yyvsp[(2) - (4)].rval), 0); as->insertInstruction(instr); }
     break;
 
   case 38:
 /* Line 1792 of yacc.c  */
 #line 97 "parser.y"
-    { std::cout << "ADD " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->addInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
+    { MInstruction instr(OPCODE::ARITHMETIC, 0, (yyvsp[(4) - (4)].rval), (yyvsp[(4) - (4)].rval), (yyvsp[(2) - (4)].rval), 0); as->insertInstruction(instr); }
     break;
 
   case 39:
 /* Line 1792 of yacc.c  */
 #line 98 "parser.y"
-    { std::cout << "SUB " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->subInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
+    { MInstruction instr(OPCODE::ARITHMETIC, 1, (yyvsp[(4) - (4)].rval), (yyvsp[(4) - (4)].rval), (yyvsp[(2) - (4)].rval), 0); as->insertInstruction(instr); }
     break;
 
   case 40:
 /* Line 1792 of yacc.c  */
 #line 99 "parser.y"
-    { std::cout << "MUL " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->mulInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
+    { MInstruction instr(OPCODE::ARITHMETIC, 2, (yyvsp[(4) - (4)].rval), (yyvsp[(4) - (4)].rval), (yyvsp[(2) - (4)].rval), 0); as->insertInstruction(instr);  }
     break;
 
   case 41:
 /* Line 1792 of yacc.c  */
 #line 100 "parser.y"
-    { std::cout << "DIV " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->divInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
+    { MInstruction instr(OPCODE::ARITHMETIC, 3, (yyvsp[(4) - (4)].rval), (yyvsp[(4) - (4)].rval), (yyvsp[(2) - (4)].rval), 0); as->insertInstruction(instr); }
     break;
 
   case 42:
 /* Line 1792 of yacc.c  */
 #line 101 "parser.y"
-    { std::cout << "NOT " << (yyvsp[(2) - (2)].rval) << std::endl; as->notInstruction((yyvsp[(2) - (2)].rval)); }
+    { MInstruction instr(OPCODE::LOGIC, 0, (yyvsp[(2) - (2)].rval), (yyvsp[(2) - (2)].rval), 0, 0); as->insertInstruction(instr); }
     break;
 
   case 43:
 /* Line 1792 of yacc.c  */
 #line 102 "parser.y"
-    { std::cout << "AND " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->andInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
+    { MInstruction instr(OPCODE::LOGIC, 1, (yyvsp[(4) - (4)].rval), (yyvsp[(4) - (4)].rval), (yyvsp[(2) - (4)].rval), 0); as->insertInstruction(instr); }
     break;
 
   case 44:
 /* Line 1792 of yacc.c  */
 #line 103 "parser.y"
-    { std::cout << "OR " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->orInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
+    { MInstruction instr(OPCODE::LOGIC, 2, (yyvsp[(4) - (4)].rval), (yyvsp[(4) - (4)].rval), (yyvsp[(2) - (4)].rval), 0); as->insertInstruction(instr); }
     break;
 
   case 45:
 /* Line 1792 of yacc.c  */
 #line 104 "parser.y"
-    { std::cout << "XOR " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->xorInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
+    { MInstruction instr(OPCODE::LOGIC, 3, (yyvsp[(4) - (4)].rval), (yyvsp[(4) - (4)].rval), (yyvsp[(2) - (4)].rval), 0); as->insertInstruction(instr); }
     break;
 
   case 46:
 /* Line 1792 of yacc.c  */
 #line 105 "parser.y"
-    { std::cout << "SHL " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->shlInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
+    { MInstruction instr(OPCODE::SHIFT, 0, (yyvsp[(4) - (4)].rval), (yyvsp[(4) - (4)].rval), (yyvsp[(2) - (4)].rval), 0); as->insertInstruction(instr); }
     break;
 
   case 47:
 /* Line 1792 of yacc.c  */
 #line 106 "parser.y"
-    { std::cout << "SHR " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->shrInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
+    { MInstruction instr(OPCODE::SHIFT, 1, (yyvsp[(4) - (4)].rval), (yyvsp[(4) - (4)].rval), (yyvsp[(2) - (4)].rval), 0); as->insertInstruction(instr); }
     break;
 
   case 48:
@@ -1832,13 +1832,13 @@ yyreduce:
   case 61:
 /* Line 1792 of yacc.c  */
 #line 120 "parser.y"
-    { std::cout << "CSRRD " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->csrrdInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
+    { MInstruction instr(OPCODE::LOAD, 0, (yyvsp[(4) - (4)].rval), (yyvsp[(2) - (4)].rval), 0, 0); as->insertInstruction(instr); }
     break;
 
   case 62:
 /* Line 1792 of yacc.c  */
 #line 121 "parser.y"
-    { std::cout << "CSRWR " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->csrwrInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
+    { MInstruction instr(OPCODE::LOAD, 4, (yyvsp[(4) - (4)].rval), (yyvsp[(2) - (4)].rval), 0, 0); as->insertInstruction(instr); }
     break;
 
   case 63:

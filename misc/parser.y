@@ -77,12 +77,12 @@ directive:
         ;
 
 instruction:
-        HALT                                    { std::cout << "HALT\n"; as->haltInstruction(); }
-        | INT                                   { std::cout << "INT\n"; as->intInstruction(); }
+        HALT                                    { MInstruction instr(OPCODE::HALT, 0, 0, 0, 0 ,0); as->insertInstruction(instr); }
+        | INT                                   { MInstruction instr(OPCODE::INT, 0, 0, 0, 0, 0); as->insertInstruction(instr); }
         | IRET                                  { std::cout << "IRET\n"; as->iretInstruction();}
         | CALL LITERAL                          { std::cout << "CALL " << $2 << std::endl; as->callInstruction($2); }
         | CALL SYMBOL                           { std::cout << "CALL " << $2 << std::endl; as->callInstruction($2); }
-        | RET                                   { std::cout << "RET\n"; as->popInstruction(15); }
+        | RET                                   { MInstruction instr(OPCODE::LOAD, 3, PC, SP, 0, 4); as->insertInstruction(instr); }
         | JMP LITERAL                           { std::cout << "JMP " << $2 << std::endl; as->jmpInstruction($2); }
         | JMP SYMBOL                            { std::cout << "JMP " << $2 << std::endl; as->jmpInstruction($2); }
         | BEQ GPR ',' GPR ',' LITERAL           { std::cout << "BEQ " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b0001); }
@@ -91,19 +91,19 @@ instruction:
         | BNE GPR ',' GPR ',' SYMBOL            { std::cout << "BNE " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b1010); }
         | BGT GPR ',' GPR ',' LITERAL           { std::cout << "BGT " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b0011); }
         | BGT GPR ',' GPR ',' SYMBOL            { std::cout << "BGT " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b1011); }
-        | PUSH GPR                              { std::cout << "PUSH " << $2 << std::endl; as->pushInstruction($2); }
-        | POP GPR                               { std::cout << "POP " << $2 << std::endl; as->popInstruction($2); }
-        | XCHG GPR ',' GPR                      { std::cout << "XCHG " << $2 << " " << $4 << std::endl; as->xchgInstruction($2, $4); }
-        | ADD GPR ',' GPR                       { std::cout << "ADD " << $2 << " " << $4 << std::endl; as->addInstruction($2, $4); }
-        | SUB GPR ',' GPR                       { std::cout << "SUB " << $2 << " " << $4 << std::endl; as->subInstruction($2, $4); }
-        | MUL GPR ',' GPR                       { std::cout << "MUL " << $2 << " " << $4 << std::endl; as->mulInstruction($2, $4); }
-        | DIV GPR ',' GPR                       { std::cout << "DIV " << $2 << " " << $4 << std::endl; as->divInstruction($2, $4); }
-        | NOT GPR                               { std::cout << "NOT " << $2 << std::endl; as->notInstruction($2); }
-        | AND GPR ',' GPR                       { std::cout << "AND " << $2 << " " << $4 << std::endl; as->andInstruction($2, $4); }
-        | OR GPR ',' GPR                        { std::cout << "OR " << $2 << " " << $4 << std::endl; as->orInstruction($2, $4); }
-        | XOR GPR ',' GPR                       { std::cout << "XOR " << $2 << " " << $4 << std::endl; as->xorInstruction($2, $4); }
-        | SHL GPR ',' GPR                       { std::cout << "SHL " << $2 << " " << $4 << std::endl; as->shlInstruction($2, $4); }
-        | SHR GPR ',' GPR                       { std::cout << "SHR " << $2 << " " << $4 << std::endl; as->shrInstruction($2, $4); }
+        | PUSH GPR                              { MInstruction instr(OPCODE::STORE, 1, SP, 0, $2, -4); as->insertInstruction(instr); }
+        | POP GPR                               { MInstruction instr(OPCODE::LOAD, 3, $2, 0x0E, 0, 4); as->insertInstruction(instr); }
+        | XCHG GPR ',' GPR                      { MInstruction instr(OPCODE::XCHG, 0, 0, $4, $2, 0); as->insertInstruction(instr); }
+        | ADD GPR ',' GPR                       { MInstruction instr(OPCODE::ARITHMETIC, 0, $4, $4, $2, 0); as->insertInstruction(instr); }
+        | SUB GPR ',' GPR                       { MInstruction instr(OPCODE::ARITHMETIC, 1, $4, $4, $2, 0); as->insertInstruction(instr); }
+        | MUL GPR ',' GPR                       { MInstruction instr(OPCODE::ARITHMETIC, 2, $4, $4, $2, 0); as->insertInstruction(instr);  }
+        | DIV GPR ',' GPR                       { MInstruction instr(OPCODE::ARITHMETIC, 3, $4, $4, $2, 0); as->insertInstruction(instr); }
+        | NOT GPR                               { MInstruction instr(OPCODE::LOGIC, 0, $2, $2, 0, 0); as->insertInstruction(instr); }
+        | AND GPR ',' GPR                       { MInstruction instr(OPCODE::LOGIC, 1, $4, $4, $2, 0); as->insertInstruction(instr); }
+        | OR GPR ',' GPR                        { MInstruction instr(OPCODE::LOGIC, 2, $4, $4, $2, 0); as->insertInstruction(instr); }
+        | XOR GPR ',' GPR                       { MInstruction instr(OPCODE::LOGIC, 3, $4, $4, $2, 0); as->insertInstruction(instr); }
+        | SHL GPR ',' GPR                       { MInstruction instr(OPCODE::SHIFT, 0, $4, $4, $2, 0); as->insertInstruction(instr); }
+        | SHR GPR ',' GPR                       { MInstruction instr(OPCODE::SHIFT, 1, $4, $4, $2, 0); as->insertInstruction(instr); }
         | LD '$' LITERAL ',' GPR                { std::cout << "LD " << $3 << " " << $5 << std::endl; as->loadLiteral($3, $5, LiteralMode::VALUE); }
         | LD '$' SYMBOL ',' GPR                 { std::cout << "LD " << $3 << " " << $5 << std::endl; as->loadSymbol($3, $5, SymbolMode::VALUE); }
         | LD  LITERAL ',' GPR                   { std::cout << "LD " << $2 << " " << $4 << std::endl; as->loadLiteral($2, $4, LiteralMode::MEMORY); }
@@ -117,8 +117,8 @@ instruction:
         | ST GPR ',' '[' GPR ']'                { std::cout << "ST " << $2 << " " << $5 << std::endl; as->storeReg($2, $5); }
         | ST GPR ',' '[' GPR '+' LITERAL ']'    { std::cout << "ST " << $2 << " " << $5 << "+" << $7 << std::endl; as->storeRegLiteral($2, $5, $7); }
         | ST GPR ',' '[' GPR '+' SYMBOL ']'     { std::cout << "ST " << $2 << " " << $5 << "+" << $7 << std::endl; }
-        | CSRRD CSR ',' GPR                     { std::cout << "CSRRD " << $2 << " " << $4 << std::endl; as->csrrdInstruction($2, $4); }
-        | CSRWR GPR ',' CSR                     { std::cout << "CSRWR " << $2 << " " << $4 << std::endl; as->csrwrInstruction($2, $4); }
+        | CSRRD CSR ',' GPR                     { MInstruction instr(OPCODE::LOAD, 0, $4, $2, 0, 0); as->insertInstruction(instr); }
+        | CSRWR GPR ',' CSR                     { MInstruction instr(OPCODE::LOAD, 4, $4, $2, 0, 0); as->insertInstruction(instr); }
         ;
 
 init_list:
