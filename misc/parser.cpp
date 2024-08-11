@@ -1604,7 +1604,7 @@ yyreduce:
   case 23:
 /* Line 1792 of yacc.c  */
 #line 82 "parser.y"
-    { std::cout << "IRET\n"; }
+    { std::cout << "IRET\n"; as->iretInstruction();}
     break;
 
   case 24:
@@ -1688,7 +1688,7 @@ yyreduce:
   case 37:
 /* Line 1792 of yacc.c  */
 #line 96 "parser.y"
-    { std::cout << "XCHG " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
+    { std::cout << "XCHG " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->xchgInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
     break;
 
   case 38:
@@ -1832,13 +1832,13 @@ yyreduce:
   case 61:
 /* Line 1792 of yacc.c  */
 #line 120 "parser.y"
-    { std::cout << "CSRRD " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
+    { std::cout << "CSRRD " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->csrrdInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
     break;
 
   case 62:
 /* Line 1792 of yacc.c  */
 #line 121 "parser.y"
-    { std::cout << "CSRWR " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; }
+    { std::cout << "CSRWR " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->csrwrInstruction((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval)); }
     break;
 
   case 63:

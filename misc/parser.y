@@ -79,7 +79,7 @@ directive:
 instruction:
         HALT                                    { std::cout << "HALT\n"; as->haltInstruction(); }
         | INT                                   { std::cout << "INT\n"; as->intInstruction(); }
-        | IRET                                  { std::cout << "IRET\n"; }
+        | IRET                                  { std::cout << "IRET\n"; as->iretInstruction();}
         | CALL LITERAL                          { std::cout << "CALL " << $2 << std::endl; as->callInstruction($2); }
         | CALL SYMBOL                           { std::cout << "CALL " << $2 << std::endl; as->callInstruction($2); }
         | RET                                   { std::cout << "RET\n"; as->popInstruction(15); }
@@ -93,7 +93,7 @@ instruction:
         | BGT GPR ',' GPR ',' SYMBOL            { std::cout << "BGT " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b1011); }
         | PUSH GPR                              { std::cout << "PUSH " << $2 << std::endl; as->pushInstruction($2); }
         | POP GPR                               { std::cout << "POP " << $2 << std::endl; as->popInstruction($2); }
-        | XCHG GPR ',' GPR                      { std::cout << "XCHG " << $2 << " " << $4 << std::endl; }
+        | XCHG GPR ',' GPR                      { std::cout << "XCHG " << $2 << " " << $4 << std::endl; as->xchgInstruction($2, $4); }
         | ADD GPR ',' GPR                       { std::cout << "ADD " << $2 << " " << $4 << std::endl; as->addInstruction($2, $4); }
         | SUB GPR ',' GPR                       { std::cout << "SUB " << $2 << " " << $4 << std::endl; as->subInstruction($2, $4); }
         | MUL GPR ',' GPR                       { std::cout << "MUL " << $2 << " " << $4 << std::endl; as->mulInstruction($2, $4); }
@@ -117,8 +117,8 @@ instruction:
         | ST GPR ',' '[' GPR ']'                { std::cout << "ST " << $2 << " " << $5 << std::endl; as->storeReg($2, $5); }
         | ST GPR ',' '[' GPR '+' LITERAL ']'    { std::cout << "ST " << $2 << " " << $5 << "+" << $7 << std::endl; as->storeRegLiteral($2, $5, $7); }
         | ST GPR ',' '[' GPR '+' SYMBOL ']'     { std::cout << "ST " << $2 << " " << $5 << "+" << $7 << std::endl; }
-        | CSRRD CSR ',' GPR                     { std::cout << "CSRRD " << $2 << " " << $4 << std::endl; }
-        | CSRWR GPR ',' CSR                     { std::cout << "CSRWR " << $2 << " " << $4 << std::endl; }
+        | CSRRD CSR ',' GPR                     { std::cout << "CSRRD " << $2 << " " << $4 << std::endl; as->csrrdInstruction($2, $4); }
+        | CSRWR GPR ',' CSR                     { std::cout << "CSRWR " << $2 << " " << $4 << std::endl; as->csrwrInstruction($2, $4); }
         ;
 
 init_list:

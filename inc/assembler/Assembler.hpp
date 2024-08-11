@@ -23,6 +23,8 @@ public:
 
     void label(std::string labelName);
 
+    void insertInstruction(MInstruction instruction);
+
     void addInstruction(int regA, int regB);
     void subInstruction(int regA, int regB);
     void mulInstruction(int regA, int regB);
@@ -58,6 +60,13 @@ public:
     void intInstruction();
     void callInstruction(uint32_t literal);
     void callInstruction(std::string symbol);
+
+    void csrrdInstruction(int csrReg, int gprReg);
+    void csrwrInstruction(int gprReg, int csrReg);
+
+    void xchgInstruction(int srcReg, int dstReg);
+
+    void iretInstruction();
 
     // Backpatching
     void addFlinkForSymbol(std::string symbolName, uint32_t position);

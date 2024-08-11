@@ -59,6 +59,35 @@ enum SymbolBind
     UND
 };
 
+enum class OPCODE
+{
+    HALT = 0,
+    INT,
+    CALL,
+    JMP,
+    XCHG,
+    ARITHMETIC,
+    LOGIC,
+    SHIFT,
+    STORE,
+    LOAD
+};
+
+struct MInstruction
+{
+    OPCODE OC;
+    uint8_t MOD;
+    uint8_t A;
+    uint8_t B;
+    uint8_t C;
+    uint16_t DISP;
+
+    MInstruction(OPCODE OC, uint8_t MOD, uint8_t A, uint8_t B, uint8_t C, uint16_t DISP)
+        : OC(OC), MOD(MOD), A(A), B(B), C(C), DISP(DISP)
+    {
+    }
+};
+
 /* Table Entries */
 
 struct LiteralEntry

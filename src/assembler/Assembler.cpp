@@ -201,198 +201,105 @@ void Assembler::label(std::string labelName)
     this->patchFlinksForSymbol(labelName);
 }
 
-void Assembler::addInstruction(int regA, int regB)
+void Assembler::insertInstruction(MInstruction instruction)
 {
-    std::cout << "Test " << regA << regB << '\n';
     std::vector<char> buff(4, 0);
-    buff[0] = 0b01010000;
-    buff[1] = ((regB & 0x0F) << 4) | (regB & 0x0F);
-    buff[2] = ((regA & 0x0F) << 4) | 0x00;
 
-    for (char c : buff)
-    {
-        std::cout << std::bitset<8>(c) << ' ';
-    }
-    std::cout << std::endl;
+    buff[0] = static_cast<uint8_t>(instruction.OC) << 4 | (instruction.MOD & 0x0F);
+    buff[1] = instruction.A << 4 | (instruction.B & 0x0F);
+    buff[2] = instruction.C << 4 | (instruction.DISP >> 8 & 0x0F);
+    buff[3] = instruction.DISP;
 
     this->eFile.write(buff);
     this->locationCounter += 4;
+}
+
+void Assembler::addInstruction(int regA, int regB)
+{
+    std::cout << "Test " << regA << regB << '\n';
+
+    MInstruction instr(OPCODE::ARITHMETIC, 0, regB, regB, regA, 0);
+    this->insertInstruction(instr);
 }
 
 void Assembler::subInstruction(int regA, int regB)
 {
     std::cout << "Test " << regA << regB << '\n';
-    std::vector<char> buff(4, 0);
-    buff[0] = 0b01010001;
-    buff[1] = ((regB & 0x0F) << 4) | (regB & 0x0F);
-    buff[2] = ((regA & 0x0F) << 4) | 0x00;
 
-    for (char c : buff)
-    {
-        std::cout << std::bitset<8>(c) << ' ';
-    }
-    std::cout << std::endl;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::ARITHMETIC, 1, regB, regB, regA, 0);
+    this->insertInstruction(instr);
 }
 
 void Assembler::mulInstruction(int regA, int regB)
 {
     std::cout << "Test " << regA << regB << '\n';
-    std::vector<char> buff(4, 0);
-    buff[0] = 0b01010010;
-    buff[1] = ((regB & 0x0F) << 4) | (regB & 0x0F);
-    buff[2] = ((regA & 0x0F) << 4) | 0x00;
 
-    for (char c : buff)
-    {
-        std::cout << std::bitset<8>(c) << ' ';
-    }
-    std::cout << std::endl;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::ARITHMETIC, 2, regB, regB, regA, 0);
+    this->insertInstruction(instr);
 }
 
 void Assembler::divInstruction(int regA, int regB)
 {
     std::cout << "Test " << regA << regB << '\n';
-    std::vector<char> buff(4, 0);
-    buff[0] = 0b01010011;
-    buff[1] = ((regB & 0x0F) << 4) | (regB & 0x0F);
-    buff[2] = ((regA & 0x0F) << 4) | 0x00;
 
-    for (char c : buff)
-    {
-        std::cout << std::bitset<8>(c) << ' ';
-    }
-    std::cout << std::endl;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::ARITHMETIC, 3, regB, regB, regA, 0);
+    this->insertInstruction(instr);
 }
 
 void Assembler::notInstruction(int regA)
 {
     std::cout << "Test " << regA << '\n';
-    std::vector<char> buff(4, 0);
-    buff[0] = 0b01100000;
-    buff[1] = ((regA & 0x0F) << 4) | (regA & 0x0F);
 
-    for (char c : buff)
-    {
-        std::cout << std::bitset<8>(c) << ' ';
-    }
-    std::cout << std::endl;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::LOGIC, 0, regA, regA, 0, 0);
+    this->insertInstruction(instr);
 }
 
 void Assembler::andInstruction(int regA, int regB)
 {
     std::cout << "Test " << regA << regB << '\n';
-    std::vector<char> buff(4, 0);
-    buff[0] = 0b01100001;
-    buff[1] = ((regB & 0x0F) << 4) | (regB & 0x0F);
-    buff[2] = ((regA & 0x0F) << 4) | 0x00;
 
-    for (char c : buff)
-    {
-        std::cout << std::bitset<8>(c) << ' ';
-    }
-    std::cout << std::endl;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::LOGIC, 1, regB, regB, regA, 0);
+    this->insertInstruction(instr);
 }
 
 void Assembler::orInstruction(int regA, int regB)
 {
     std::cout << "Test " << regA << regB << '\n';
-    std::vector<char> buff(4, 0);
-    buff[0] = 0b01100010;
-    buff[1] = ((regB & 0x0F) << 4) | (regB & 0x0F);
-    buff[2] = ((regA & 0x0F) << 4) | 0x00;
 
-    for (char c : buff)
-    {
-        std::cout << std::bitset<8>(c) << ' ';
-    }
-    std::cout << std::endl;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::LOGIC, 2, regB, regB, regA, 0);
+    this->insertInstruction(instr);
 }
 
 void Assembler::xorInstruction(int regA, int regB)
 {
     std::cout << "Test " << regA << regB << '\n';
-    std::vector<char> buff(4, 0);
-    buff[0] = 0b01100011;
-    buff[1] = ((regB & 0x0F) << 4) | (regB & 0x0F);
-    buff[2] = ((regA & 0x0F) << 4) | 0x00;
 
-    for (char c : buff)
-    {
-        std::cout << std::bitset<8>(c) << ' ';
-    }
-    std::cout << std::endl;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::LOGIC, 3, regB, regB, regA, 0);
+    this->insertInstruction(instr);
 }
 
 void Assembler::shlInstruction(int regA, int regB)
 {
     std::cout << "Test " << regA << regB << '\n';
-    std::vector<char> buff(4, 0);
-    buff[0] = 0b01110000;
-    buff[1] = ((regB & 0x0F) << 4) | (regB & 0x0F);
-    buff[2] = ((regA & 0x0F) << 4) | 0x00;
 
-    for (char c : buff)
-    {
-        std::cout << std::bitset<8>(c) << ' ';
-    }
-    std::cout << std::endl;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::SHIFT, 0, regB, regB, regA, 0);
+    this->insertInstruction(instr);
 }
 
 void Assembler::shrInstruction(int regA, int regB)
 {
     std::cout << "Test " << regA << regB << '\n';
-    std::vector<char> buff(4, 0);
-    buff[0] = 0b01110001;
-    buff[1] = ((regB & 0x0F) << 4) | (regB & 0x0F);
-    buff[2] = ((regA & 0x0F) << 4) | 0x00;
 
-    for (char c : buff)
-    {
-        std::cout << std::bitset<8>(c) << ' ';
-    }
-    std::cout << std::endl;
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::SHIFT, 1, regB, regB, regA, 0);
+    this->insertInstruction(instr);
 }
 
 void Assembler::popInstruction(int regA)
 {
     // regA <= mem[sp]
     // sp = sp + 4
-    std::vector<char> buff(4, 0);
-
-    buff[0] = 0x93;
-    buff[1] = regA << 4 | 0x0E;
-    buff[2] = 0x00;
-    buff[3] = static_cast<uint8_t>(4);
-
-    this->eFile.write(buff);
-    this->locationCounter += 4;
+    MInstruction instr(OPCODE::LOAD, 3, regA, 0x0E, 0, 4);
+    this->insertInstruction(instr);
 }
 
 void Assembler::pushInstruction(int regB)
@@ -721,4 +628,59 @@ void Assembler::callInstruction(std::string symbol)
     uint32_t place = this->locationCounter - 2;
     this->poolBackpatch[place] = poolOffset;
     this->poolZeroRela[poolOffset] = entry->index;
+}
+
+void Assembler::csrrdInstruction(int csrReg, int gprReg)
+{
+    std::vector<char> buff(4, 0);
+
+    buff[0] = 0x90;
+    buff[1] = gprReg << 4 | (csrReg & 0x0F);
+
+    eFile.write(buff);
+    this->locationCounter += 4;
+}
+
+void Assembler::csrwrInstruction(int gprReg, int csrReg)
+{
+    std::vector<char> buff(4, 0);
+
+    buff[0] = 0x94;
+    buff[1] = csrReg << 4 | (gprReg & 0x0F);
+
+    eFile.write(buff);
+    this->locationCounter += 4;
+}
+
+void Assembler::xchgInstruction(int srcReg, int dstReg)
+{
+    std::vector<char> buff(4, 0);
+
+    buff[0] = 0x40;
+    buff[1] = 0x0F & dstReg;
+    buff[2] = srcReg << 4;
+
+    this->eFile.write(buff);
+    this->locationCounter += 4;
+}
+
+void Assembler::iretInstruction()
+{
+    std::vector<char> buff(4, 0);
+
+    buff[0] = 0x96;
+    buff[1] = STATUS << 4 | 0x0E;
+    buff[2] = 0;
+    buff[3] = 4;
+
+    this->eFile.write(buff);
+    this->locationCounter += 4;
+
+    buff[0] = 0x93;
+    buff[1] = 0xFE;
+    buff[2] = 0;
+    buff[3] = 8;
+
+    this->eFile.write(buff);
+    this->locationCounter += 4;
 }
