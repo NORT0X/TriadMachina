@@ -9,14 +9,22 @@ Assembler::Assembler(std::string outputFile) : outputFile(outputFile)
     this->eFile.open(outputFile);
     this->symbolTable = SymbolTable();
     this->sectionTable = SectionTable();
+
+    // Reserve places at the beginning for three
+    std::vector<char> buff(4, 0);
+    for (int i = 0; i < 4 * 2; ++i)
+    {
+        this->eFile.write(buff);
+        this->locationCounter += 4;
+    }
 }
 
 void Assembler::end()
 {
     // Update last section size and write pool
-    if (this->sectionTable.tableSize() > 0)
+    if (this->sectionTable.getSize() > 0)
     {
-        SectionEntry *lastSection = this->sectionTable.findSection(this->sectionTable.tableSize() - 1);
+        SectionEntry *lastSection = this->sectionTable.findSection(this->sectionTable.getSize() - 1);
         lastSection->size = this->locationCounter - lastSection->base;
 
         // Write pool
@@ -46,6 +54,33 @@ void Assembler::end()
     std::cout << this->symbolTable;
     std::cout << "\n\nSectionTable\n\n";
     std::cout << this->sectionTable;
+    std::cout << "\n\nRelaTable\n\n";
+    std::cout << this->relaTable;
+
+    this->writeHeaderAndTables(); // writeHeader must be called here
+}
+
+void Assembler::writeHeaderAndTables()
+{
+
+    // Write code size
+    this->eFile.writeAtPosition(0, 32);
+    this->eFile.writeAtPosition(4, this->locationCounter - 32);
+
+    // Write symbol table info
+    this->eFile.writeAtPosition(8, this->eFile.getFileSize());
+    this->eFile.writeAtPosition(12, this->symbolTable.getSize());
+    this->eFile.write(this->symbolTable.getWriteData());
+
+    // Write section table info
+    this->eFile.writeAtPosition(16, this->eFile.getFileSize());
+    this->eFile.writeAtPosition(20, this->sectionTable.getSize());
+    this->eFile.write(this->sectionTable.getWriteData());
+
+    // Write rela table info
+    this->eFile.writeAtPosition(24, this->eFile.getFileSize());
+    this->eFile.writeAtPosition(28, this->relaTable.getSize());
+    this->eFile.write(this->relaTable.getWriteData());
 }
 
 void Assembler::skipDirective(uint32_t literal)
@@ -97,7 +132,7 @@ void Assembler::sectionDirective(std::string sectionName)
     SectionEntry *entry = this->sectionTable.findSection(sectionName);
 
     // Before anything update size of previous section
-    if (this->sectionTable.tableSize() > 0)
+    if (this->sectionTable.getSize() > 0)
     {
         SectionEntry *prevSection = this->sectionTable.findSection(currentSection);
         prevSection->size = this->locationCounter - prevSection->base;
@@ -216,7 +251,6 @@ void Assembler::insertInstruction(MInstruction instruction)
 
 void Assembler::jmpInstruction(uint32_t literal)
 {
-    std::vector<char> buff(4, 0);
     if (literal <= 0x0FFF)
     {
         MInstruction instr(OPCODE::JMP, 0, 0, 0, 0, literal);
@@ -243,8 +277,6 @@ void Assembler::jmpInstruction(uint32_t literal)
 
 void Assembler::jmpInstruction(std::string symbol)
 {
-    std::vector<char> buff(4, 0);
-
     SymbolEntry *entry = this->symbolTable.findSymbol(symbol);
 
     // This symbol can be:
@@ -299,9 +331,6 @@ void Assembler::jmpInstruction(std::string symbol)
 void Assembler::branch(int reg1, int reg2, uint32_t literal, uint8_t mode)
 {
     // Same as jump just we use register for operands and different modes
-
-    std::vector<char> buff(4, 0);
-
     if (literal <= 0x0FFF)
     {
         MInstruction instr(OPCODE::JMP, mode, 0, reg1, reg2, literal);
@@ -327,8 +356,6 @@ void Assembler::branch(int reg1, int reg2, uint32_t literal, uint8_t mode)
 
 void Assembler::branch(int reg1, int reg2, std::string symbol, uint8_t mode)
 {
-    std::vector<char> buff(4, 0);
-
     SymbolEntry *entry = this->symbolTable.findSymbol(symbol);
 
     // This symbol can be:
@@ -384,8 +411,6 @@ void Assembler::branch(int reg1, int reg2, std::string symbol, uint8_t mode)
 
 void Assembler::callInstruction(uint32_t literal)
 {
-    std::vector<char> buff(4, 0);
-
     if (literal <= 0x0FFF)
     {
         MInstruction instr(OPCODE::CALL, 0, 0, 0, 0, literal);
@@ -406,8 +431,6 @@ void Assembler::callInstruction(uint32_t literal)
 
 void Assembler::callInstruction(std::string symbol)
 {
-    std::vector<char> buff(4, 0);
-
     SymbolEntry *entry = this->symbolTable.findSymbol(symbol);
 
     if (entry == nullptr)
@@ -443,6 +466,7 @@ void Assembler::callInstruction(std::string symbol)
     uint32_t poolOffset = this->currSecPool.addLiteral(0);
 
     MInstruction instr(OPCODE::CALL, 1, PC, 0, 0, 0);
+    this->insertInstruction(instr);
 
     uint32_t place = this->locationCounter - 2;
     this->poolBackpatch[place] = poolOffset;
@@ -451,8 +475,6 @@ void Assembler::callInstruction(std::string symbol)
 
 void Assembler::iretInstruction()
 {
-    std::vector<char> buff(4, 0);
-
     MInstruction instr(OPCODE::LOAD, 6, STATUS, SP, 0, 4);
     this->insertInstruction(instr);
 

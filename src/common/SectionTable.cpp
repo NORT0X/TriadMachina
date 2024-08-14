@@ -82,3 +82,38 @@ std::ostream &operator<<(std::ostream &os, const SectionTable &sectionTable)
 
     return os;
 }
+
+std::vector<char> SectionTable::getWriteData() const
+{
+    std::vector<char> data;
+
+    // Lambda to write a uint32_t value in big endian
+    auto write_uint32 = [&data](uint32_t value)
+    {
+        data.push_back(static_cast<char>(value & 0xFF));
+        data.push_back(static_cast<char>((value >> 8) & 0xFF));
+        data.push_back(static_cast<char>((value >> 16) & 0xFF));
+        data.push_back(static_cast<char>((value >> 24) & 0xFF));
+    };
+
+    // Process each SectionEntry in the table
+    for (const SectionEntry &entry : table)
+    {
+        write_uint32(entry.index);
+        write_uint32(entry.name); // Ensure name is an appropriate index or identifier
+        write_uint32(static_cast<uint32_t>(entry.base));
+        write_uint32(static_cast<uint32_t>(entry.size));
+    }
+
+    // Process each string in sectionNames
+    for (const std::string &name : sectionNames)
+    {
+        // Write each character of the string as a byte
+        data.insert(data.end(), name.begin(), name.end());
+
+        // Null-terminate the string (if required by your format)
+        data.push_back('\0');
+    }
+
+    return data;
+}

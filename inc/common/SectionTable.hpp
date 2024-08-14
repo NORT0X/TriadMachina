@@ -13,7 +13,8 @@ public:
     SectionEntry *findSection(std::string name);
     SectionEntry *findSection(SectionIndex index);
 
-    int tableSize() const { return this->table.size(); }
+    int getSize() const { return this->table.size(); }
+    std::vector<char> getWriteData() const;
 
     friend std::ostream &operator<<(std::ostream &os, const SectionTable &sectionTable);
 

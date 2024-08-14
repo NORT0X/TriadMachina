@@ -3,7 +3,6 @@
 .global mathAdd, mathSub, mathMul, mathDiv
 
 .section math
-.word mathAdd, mathDiv
 mathAdd:
     push %r2
     ld [%sp + 0x08], %r1

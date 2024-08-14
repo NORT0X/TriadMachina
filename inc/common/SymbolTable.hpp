@@ -18,6 +18,10 @@ public:
 
     SymbolEntry *findSymbol(std::string name);
 
+    std::vector<char> getWriteData();
+
+    size_t getSize() const { return this->table.size(); }
+
     friend std::ostream &operator<<(std::ostream &os, const SymbolTable &symbolTable);
 
 private:

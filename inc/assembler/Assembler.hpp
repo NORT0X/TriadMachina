@@ -14,6 +14,8 @@ public:
     Assembler(std::string outputFile);
 
     void end();
+    void writeHeaderAndTables(); // used in end()
+
     void skipDirective(uint32_t literal);
     void globalDirective(std::string name);
     void externDirective(std::string name);

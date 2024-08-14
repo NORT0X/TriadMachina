@@ -176,6 +176,10 @@ public:
     bool writeAtPosition(size_t position, const std::vector<char> &data);
     bool readAtPosition(size_t position, std::vector<char> &data, size_t size);
 
+    bool writeAtPosition(size_t position, uint32_t number);
+
+    std::size_t getFileSize();
+
 private:
     std::fstream fileStream;
 };

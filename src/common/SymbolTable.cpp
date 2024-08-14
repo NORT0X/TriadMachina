@@ -75,3 +75,41 @@ std::ostream &operator<<(std::ostream &os, const SymbolTable &symbolTable)
 
     return os;
 }
+
+std::vector<char> SymbolTable::getWriteData()
+{
+    std::vector<char> data;
+
+    // Process each SymbolEntry in the table
+    for (const SymbolEntry &entry : table)
+    {
+        // Write each attribute of SymbolEntry as 4 bytes (uint32_t)
+        auto write_uint32 = [&data](uint32_t value)
+        {
+            data.push_back(static_cast<char>(value & 0xFF));
+            data.push_back(static_cast<char>((value >> 8) & 0xFF));
+            data.push_back(static_cast<char>((value >> 16) & 0xFF));
+            data.push_back(static_cast<char>((value >> 24) & 0xFF));
+        };
+
+        write_uint32(entry.index);
+        write_uint32(entry.name);
+        write_uint32(entry.section_id);
+        write_uint32(static_cast<uint32_t>(entry.bind));
+        write_uint32(entry.value);
+        write_uint32(static_cast<uint32_t>(entry.defined));
+        write_uint32(entry.flink);
+    }
+
+    // Process each string in symbolNames
+    for (const std::string &name : symbolNames)
+    {
+        // Write each character of the string as a byte
+        data.insert(data.end(), name.begin(), name.end());
+
+        // Null-terminate the string
+        data.push_back('\0');
+    }
+
+    return data;
+}

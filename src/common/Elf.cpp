@@ -108,3 +108,40 @@ bool ElfFile::readAtPosition(size_t position, std::vector<char> &data, size_t si
     std::cerr << "File not open for reading" << std::endl;
     return false;
 }
+
+bool ElfFile::writeAtPosition(size_t position, uint32_t number)
+{
+    std::vector<char> buff(4, 0);
+
+    buff[0] = number >> 8 * 3;
+    buff[1] = number >> 8 * 2;
+    buff[2] = number >> 8 * 1;
+    buff[3] = number;
+
+    return this->writeAtPosition(position, buff); // NOT RECURSION
+}
+
+std::size_t ElfFile::getFileSize()
+{
+    if (fileStream.is_open())
+    {
+        // Save the current position of the file pointer
+        std::streampos currentPos = fileStream.tellg();
+
+        // Seek to the end of the file
+        fileStream.seekg(0, std::ios::end);
+
+        // Get the position, which is the size of the file
+        std::size_t fileSize = static_cast<std::size_t>(fileStream.tellg());
+
+        // Restore the file pointer to its original position
+        fileStream.seekg(currentPos);
+
+        return fileSize;
+    }
+    else
+    {
+        std::cerr << "File not open to get size" << std::endl;
+        return 0;
+    }
+}
