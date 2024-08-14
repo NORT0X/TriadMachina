@@ -28,7 +28,7 @@ void Assembler::loadLiteral(uint32_t literal, int reg, LiteralMode mode)
         this->insertInstruction(instr);
 
         // Add backpatch for poolOffset
-        uint32_t place = this->locationCounter - 2;
+        uint32_t place = this->locationCounter - 4;
         this->poolBackpatch[place] = poolOffset;
 
         break;
@@ -55,7 +55,7 @@ void Assembler::loadLiteral(uint32_t literal, int reg, LiteralMode mode)
         this->insertInstruction(instr);
 
         // Add backpatch for poolOffset
-        uint32_t place = this->locationCounter - 2;
+        uint32_t place = this->locationCounter - 4;
         this->poolBackpatch[place] = poolOffset;
 
         // Now do reg <= [reg] --- [reg] will be [literal_value]
@@ -107,7 +107,7 @@ void Assembler::loadRegLiteral(int operandReg, uint32_t literal, int dstReg)
     this->insertInstruction(instr);
 
     // Add backpatch for poolOffset
-    uint32_t place = this->locationCounter - 2;
+    uint32_t place = this->locationCounter - 4;
     this->poolBackpatch[place] = poolOffset;
 
     // Now do reg <= [reg + reg]
@@ -144,7 +144,7 @@ void Assembler::loadSymbol(std::string symbol, int dstReg, SymbolMode mode)
         this->insertInstruction(instr);
 
         // Add backpatch for poolOffset and rela
-        uint32_t place = this->locationCounter - 2;
+        uint32_t place = this->locationCounter - 4;
         this->poolBackpatch[place] = poolOffset;
         this->poolZeroRela[poolOffset] = entry->index;
 
@@ -163,7 +163,7 @@ void Assembler::loadSymbol(std::string symbol, int dstReg, SymbolMode mode)
         this->insertInstruction(instr);
 
         // Add backpatch of poolOffset and rela
-        uint32_t place = this->locationCounter - 2;
+        uint32_t place = this->locationCounter - 4;
         this->poolBackpatch[place] = poolOffset;
         this->poolZeroRela[poolOffset] = entry->index;
 
@@ -194,7 +194,7 @@ void Assembler::storeLiteral(int reg, uint32_t literal_dst)
     MInstruction instr(OPCODE::STORE, 2, PC, 0, reg, 0);
     this->insertInstruction(instr);
 
-    uint32_t place = this->locationCounter - 2;
+    uint32_t place = this->locationCounter - 4;
     this->poolBackpatch[place] = poolOffset;
 }
 
@@ -220,7 +220,7 @@ void Assembler::storeRegLiteral(int reg_src, int reg_dst, uint32_t literal_dst)
 
     MInstruction instr(OPCODE::STORE, 2, PC, reg_dst, reg_src, 0);
 
-    uint32_t place = this->locationCounter - 2;
+    uint32_t place = this->locationCounter - 4;
     this->poolBackpatch[place] = poolOffset;
 }
 
@@ -244,7 +244,7 @@ void Assembler::storeSymbol(int reg_src, std::string symbol_dst)
     MInstruction instr(OPCODE::STORE, 2, PC, 0, reg_src, 0);
     this->insertInstruction(instr);
 
-    uint32_t place = this->locationCounter - 2;
+    uint32_t place = this->locationCounter - 4;
     this->poolBackpatch[place] = poolOffset;
     this->poolZeroRela[poolOffset] = entry->index;
 }

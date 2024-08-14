@@ -38,7 +38,6 @@ mathDiv:
 
 .section test
 methodTest:
-    csrrd %cause, %r0
     call mathDiv
     ld $mathDiv, %r3
     ld mathDiv, %r3

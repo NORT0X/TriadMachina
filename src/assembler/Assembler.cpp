@@ -236,14 +236,14 @@ void Assembler::label(std::string labelName)
     this->patchFlinksForSymbol(labelName);
 }
 
-void Assembler::insertInstruction(MInstruction instruction)
+void Assembler::insertInstruction(MInstruction instruction, bool isLittleEndian)
 {
     std::vector<char> buff(4, 0);
 
-    buff[0] = static_cast<uint8_t>(instruction.OC) << 4 | (instruction.MOD & 0x0F);
-    buff[1] = instruction.A << 4 | (instruction.B & 0x0F);
-    buff[2] = instruction.C << 4 | (instruction.DISP >> 8 & 0x0F);
-    buff[3] = instruction.DISP;
+    buff[3] = static_cast<uint8_t>(instruction.OC) << 4 | (instruction.MOD & 0x0F);
+    buff[2] = instruction.A << 4 | (instruction.B & 0x0F);
+    buff[1] = instruction.C << 4 | (instruction.DISP >> 8 & 0x0F);
+    buff[0] = instruction.DISP;
 
     this->eFile.write(buff);
     this->locationCounter += 4;
@@ -271,7 +271,7 @@ void Assembler::jmpInstruction(uint32_t literal)
     this->insertInstruction(instr);
 
     // Add backpatch for poolOffset
-    uint32_t place = this->locationCounter - 2;
+    uint32_t place = this->locationCounter - 4;
     this->poolBackpatch[place] = poolOffset;
 }
 
@@ -323,7 +323,7 @@ void Assembler::jmpInstruction(std::string symbol)
     this->insertInstruction(instr);
 
     // Add backpatch for poolOffset
-    uint32_t place = this->locationCounter - 2;
+    uint32_t place = this->locationCounter - 4;
     this->poolBackpatch[place] = poolOffset;
     this->poolZeroRela[poolOffset] = entry->index;
 }
@@ -350,7 +350,7 @@ void Assembler::branch(int reg1, int reg2, uint32_t literal, uint8_t mode)
     this->insertInstruction(instr);
 
     // Add backpatch for poolOffset
-    uint32_t place = this->locationCounter - 2;
+    uint32_t place = this->locationCounter - 4;
     this->poolBackpatch[place] = poolOffset;
 }
 
@@ -404,7 +404,7 @@ void Assembler::branch(int reg1, int reg2, std::string symbol, uint8_t mode)
     this->insertInstruction(instr);
 
     // Add backpatch for poolOffset
-    uint32_t place = this->locationCounter - 2;
+    uint32_t place = this->locationCounter - 4;
     this->poolBackpatch[place] = poolOffset;
     this->poolZeroRela[poolOffset] = entry->index;
 }
@@ -425,7 +425,7 @@ void Assembler::callInstruction(uint32_t literal)
     MInstruction instr(OPCODE::CALL, 1, PC, 0, 0, 0);
     this->insertInstruction(instr);
 
-    uint32_t place = this->locationCounter - 2;
+    uint32_t place = this->locationCounter - 4;
     this->poolBackpatch[place] = poolOffset;
 }
 
@@ -468,7 +468,7 @@ void Assembler::callInstruction(std::string symbol)
     MInstruction instr(OPCODE::CALL, 1, PC, 0, 0, 0);
     this->insertInstruction(instr);
 
-    uint32_t place = this->locationCounter - 2;
+    uint32_t place = this->locationCounter - 4;
     this->poolBackpatch[place] = poolOffset;
     this->poolZeroRela[poolOffset] = entry->index;
 }

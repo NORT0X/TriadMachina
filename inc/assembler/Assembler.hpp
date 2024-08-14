@@ -25,7 +25,7 @@ public:
 
     void label(std::string labelName);
 
-    void insertInstruction(MInstruction instruction);
+    void insertInstruction(MInstruction instruction, bool isLittleEndian = true);
 
     void jmpInstruction(uint32_t literal);
     void jmpInstruction(std::string symbol);
