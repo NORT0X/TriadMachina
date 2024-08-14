@@ -8,6 +8,7 @@ src/common/LiteralTable.cpp \
 src/common/SectionTable.cpp \
 src/common/SymbolTable.cpp \
 src/common/RelaTable.cpp \
+src/common/File.cpp \
 src/assembler/Assembler.cpp \
 src/assembler/AsBackpatch.cpp \
 src/assembler/AsLoadStore.cpp

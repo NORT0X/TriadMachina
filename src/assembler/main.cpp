@@ -14,9 +14,37 @@ extern FILE *yyin;
 
 unique_ptr<Assembler> as;
 
-int main()
+int main(int argc, char *argv[])
 {
-    std::string fileName = "test.as";
+
+    std::string inputFile;
+    std::string outputFile;
+
+    // Check if there are enough arguments
+    if (argc < 2)
+    {
+        std::cerr << "Usage: asembler [options] <input_filename>" << std::endl;
+        return 1;
+    }
+
+    // Parse command-line arguments
+    for (int i = 1; i < argc; ++i)
+    {
+        std::string arg = argv[i];
+
+        if (arg == "-o" && i + 1 < argc)
+        {
+            // Capture output file name
+            outputFile = argv[++i];
+        }
+        else
+        {
+            // Assume the last argument is the input file name
+            inputFile = arg;
+        }
+    }
+
+    std::string fileName = inputFile;
     FILE *myFile = fopen(fileName.c_str(), "r");
 
     if (!myFile)
@@ -25,8 +53,11 @@ int main()
         return -1;
     }
 
-    std::string outFile = "test.o";
-    as = make_unique<Assembler>(outFile);
+    if (outputFile.empty())
+    {
+        outputFile = changeExtensionToO(inputFile);
+    }
+    as = make_unique<Assembler>(outputFile);
 
     yyin = myFile;
 

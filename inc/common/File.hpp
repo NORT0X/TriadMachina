@@ -13,3 +13,5 @@ public:
     virtual bool write(const std::vector<char> &data) = 0;
     virtual std::vector<char> read() = 0;
 };
+
+std::string changeExtensionToO(const std::string &filename);
