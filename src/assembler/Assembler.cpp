@@ -68,19 +68,22 @@ void Assembler::writeHeaderAndTables()
     this->eFile.writeAtPosition(4, this->locationCounter - 32);
 
     // Write symbol table info
-    this->eFile.writeAtPosition(8, this->eFile.getFileSize());
-    this->eFile.writeAtPosition(12, this->symbolTable.getSize());
+    size_t tmp = this->eFile.getFileSize();
+    this->eFile.writeAtPosition(8, tmp);
     this->eFile.write(this->symbolTable.getWriteData());
+    this->eFile.writeAtPosition(12, this->eFile.getFileSize() - tmp);
 
     // Write section table info
-    this->eFile.writeAtPosition(16, this->eFile.getFileSize());
-    this->eFile.writeAtPosition(20, this->sectionTable.getSize());
+    tmp = this->eFile.getFileSize();
+    this->eFile.writeAtPosition(16, tmp);
     this->eFile.write(this->sectionTable.getWriteData());
+    this->eFile.writeAtPosition(20, this->eFile.getFileSize() - tmp);
 
     // Write rela table info
-    this->eFile.writeAtPosition(24, this->eFile.getFileSize());
-    this->eFile.writeAtPosition(28, this->relaTable.getSize());
+    tmp = this->eFile.getFileSize();
+    this->eFile.writeAtPosition(24, tmp);
     this->eFile.write(this->relaTable.getWriteData());
+    this->eFile.writeAtPosition(28, this->eFile.getFileSize() - tmp);
 }
 
 void Assembler::skipDirective(uint32_t literal)

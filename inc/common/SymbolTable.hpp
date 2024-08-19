@@ -20,6 +20,8 @@ public:
 
     std::vector<char> getWriteData();
 
+    void readFromData(const std::vector<char> &data);
+
     size_t getSize() const { return this->table.size(); }
 
     friend std::ostream &operator<<(std::ostream &os, const SymbolTable &symbolTable);

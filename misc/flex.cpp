@@ -1137,7 +1137,7 @@ YY_RULE_SETUP
 case 45:
 YY_RULE_SETUP
 #line 122 "flex.l"
-{ yylval.ival = strtol(yytext, NULL, 0); return LITERAL; }
+{ yylval.ival = strtoul(yytext, NULL, 0); return LITERAL; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP

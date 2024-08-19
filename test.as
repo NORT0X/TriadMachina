@@ -1,47 +1,79 @@
-# file: math.s
+# file: main.s
 
-.global mathAdd, mathSub, mathMul, mathDiv
+.extern handler, mathAdd, mathSub, mathMul, mathDiv
 
-.section math
-mathAdd:
-    push %r2
-    ld [%sp + 0x08], %r1
-    ld [%sp + 0x0C], %r2
-    add %r2, %r1 # r1 used for the result
-    pop %r2
-    ret
+.global my_start
 
-mathSub:
-    push %r2
-    ld [%sp + 0x08], %r1
-    ld [%sp + 0x0C], %r2
-    sub %r2, %r1 # r1 used for the result
-    pop %r2
-    ret
+.global value1, value2, value3, value4, value5, value6, value7
 
-mathMul:
-    push %r2
-    ld [%sp + 0x08], %r1
-    ld [%sp + 0x0C], %r2
-    mul %r2, %r1 # r1 used for the result
-    pop %r2
-    beq %r1, %r2, mathDiv
-    ret
+.section my_code
+my_start:
+    ld $0xFFFFFEFE, %sp
+    ld $handler, %r1
+    csrwr %r1, %handler
 
-mathDiv:
-    push %r2
-    ld [%sp + 0x08], %r1
-    ld [%sp + 0x0C], %r2
-    div %r2, %r1 # r1 used for the result
-    pop %r2
-    ret
+    int # software interrupt
 
-.section test
-methodTest:
+    ld $1, %r1
+    push %r1
+    ld $1, %r1
+    push %r1
+    call 0xF0000000
+    st %r1, value2
+
+    ld $2, %r1
+    push %r1
+    ld $1, %r1
+    push %r1
+    call mathAdd
+    st %r1, value3
+
+    ld $7, %r1
+    push %r1
+    ld $11, %r1
+    push %r1
+    call mathSub
+    st %r1, value4
+
+    ld $5, %r1
+    push %r1
+    ld $25, %r1
+    push %r1
     call mathDiv
-    ld $mathDiv, %r3
-    ld mathDiv, %r3
-    sub %r2, %r1
-    ret
+    st %r1, value5
+
+    ld $4, %r1
+    push %r1
+    ld $24, %r1
+    push %r1
+    call mathDiv
+    st %r1, value6
+
+    ld value1, %r1
+    ld value2, %r2
+    ld value3, %r3
+    ld value4, %r4
+    ld value5, %r5
+    ld value6, %r6
+    ld value7, %r7
+
+    halt
+
+.section my_data
+value1:
+.word 0
+value2:
+.word 0
+value3:
+.word 0
+value4:
+.word 0
+value5:
+.word 0
+value6:
+.word 0
+value7:
+.word 0
 
 .end
+

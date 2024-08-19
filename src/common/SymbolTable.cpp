@@ -80,17 +80,20 @@ std::vector<char> SymbolTable::getWriteData()
 {
     std::vector<char> data;
 
+    auto write_uint32 = [&data](uint32_t value)
+    {
+        data.push_back(static_cast<char>(value & 0xFF));
+        data.push_back(static_cast<char>((value >> 8) & 0xFF));
+        data.push_back(static_cast<char>((value >> 16) & 0xFF));
+        data.push_back(static_cast<char>((value >> 24) & 0xFF));
+    };
+
+    write_uint32(this->table.size());
+
     // Process each SymbolEntry in the table
     for (const SymbolEntry &entry : table)
     {
         // Write each attribute of SymbolEntry as 4 bytes (uint32_t)
-        auto write_uint32 = [&data](uint32_t value)
-        {
-            data.push_back(static_cast<char>(value & 0xFF));
-            data.push_back(static_cast<char>((value >> 8) & 0xFF));
-            data.push_back(static_cast<char>((value >> 16) & 0xFF));
-            data.push_back(static_cast<char>((value >> 24) & 0xFF));
-        };
 
         write_uint32(entry.index);
         write_uint32(entry.name);
@@ -112,4 +115,77 @@ std::vector<char> SymbolTable::getWriteData()
     }
 
     return data;
+}
+
+void SymbolTable::readFromData(const std::vector<char> &data)
+{
+    size_t offset = 0;
+
+    auto read_uint32 = [&data, &offset]() -> uint32_t
+    {
+        uint32_t value = 0;
+        value |= static_cast<uint8_t>(data[offset]);
+        value |= static_cast<uint8_t>(data[offset + 1]) << 8;
+        value |= static_cast<uint8_t>(data[offset + 2]) << 16;
+        value |= static_cast<uint8_t>(data[offset + 3]) << 24;
+        offset += sizeof(uint32_t);
+        return value;
+    };
+
+    // Clear the current symbol table and names
+    table.clear();
+    symbolNames.clear();
+    id = 0; // reset the symbol index counter
+
+    uint32_t num_symbols = read_uint32();
+
+    // Read SymbolEntries
+    while (offset < num_symbols * 28)
+    {
+
+        // Try reading each field assuming we are still in the symbol entries section
+        SymbolEntry entry(-1, -1, SymbolBind::UND, 0);
+
+        try
+        {
+            entry.index = read_uint32();
+            entry.name = read_uint32();
+            entry.section_id = read_uint32();
+            entry.bind = static_cast<SymbolBind>(read_uint32());
+            entry.value = read_uint32();
+            entry.defined = static_cast<bool>(read_uint32());
+            entry.flink = read_uint32();
+        }
+        catch (const std::out_of_range &)
+        {
+            break; // Exit loop if we run out of data (in case of incomplete data)
+        }
+
+        table.push_back(entry);
+
+        // Update the id to track the last symbol index
+        id = entry.index + 1;
+    }
+
+    // Read symbol names
+    while (offset < data.size())
+    {
+        std::string name;
+
+        // Extract characters from data until we hit the null terminator
+        while (offset < data.size() && data[offset] != '\0')
+        {
+            name.push_back(data[offset]);
+            ++offset;
+        }
+
+        // Skip the null terminator
+        if (offset < data.size() && data[offset] == '\0')
+        {
+            ++offset;
+        }
+
+        // Add the string to the symbol names list
+        symbolNames.push_back(name);
+    }
 }

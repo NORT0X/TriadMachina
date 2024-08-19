@@ -119,7 +119,7 @@ WHITESPACE [ \r\t]
 {CSR1}          { yylval.rval = HANDLER; return CSR; }
 {CSR2}          { yylval.rval = CAUSE; return CSR; }
 
-{LITERAL}       { yylval.ival = strtol(yytext, NULL, 0); return LITERAL; }
+{LITERAL}       { yylval.ival = strtoul(yytext, NULL, 0); return LITERAL; }
 {SYMBOL}        { yylval.sval = strdup(yytext); return SYMBOL; }
 {STRING}        { yylval.sval = strdup(yytext); return STRING; }
 

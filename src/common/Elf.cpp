@@ -13,6 +13,17 @@ bool ElfFile::open(const std::string &filename)
     return true;
 }
 
+bool ElfFile::openForRead(const std::string &filename)
+{
+    fileStream.open(filename, std::ios::binary | std::ios::in);
+    if (!fileStream)
+    {
+        std::cerr << "Failed to open file for reading: " << filename << std::endl;
+        return false;
+    }
+    return true;
+}
+
 void ElfFile::close()
 {
     if (fileStream.is_open())
@@ -113,12 +124,49 @@ bool ElfFile::writeAtPosition(size_t position, uint32_t number)
 {
     std::vector<char> buff(4, 0);
 
-    buff[0] = number >> 8 * 3;
-    buff[1] = number >> 8 * 2;
-    buff[2] = number >> 8 * 1;
-    buff[3] = number;
+    buff[3] = number >> 8 * 3;
+    buff[2] = number >> 8 * 2;
+    buff[1] = number >> 8 * 1;
+    buff[0] = number;
 
     return this->writeAtPosition(position, buff); // NOT RECURSION
+}
+
+bool ElfFile::readAtPosition(size_t position, uint32_t &number)
+{
+    if (fileStream.is_open())
+    {
+        // Move to the specified position
+        fileStream.seekg(position, std::ios::beg);
+        if (fileStream.tellg() != static_cast<std::streampos>(position))
+        {
+            std::cerr << "Failed to seek to position: " << position << std::endl;
+            return false;
+        }
+
+        // Create a buffer to hold 4 bytes (size of uint32_t)
+        std::vector<char> buffer(4);
+
+        // Read 4 bytes from the file
+        fileStream.read(buffer.data(), 4);
+        if (!fileStream)
+        {
+            std::cerr << "Failed to read data at position: " << position << std::endl;
+            return false;
+        }
+
+        // Convert the buffer into a uint32_t
+        number = static_cast<uint32_t>(
+            (static_cast<uint8_t>(buffer[3]) << 24) | // little-endian order
+            (static_cast<uint8_t>(buffer[2]) << 16) |
+            (static_cast<uint8_t>(buffer[1]) << 8) |
+            (static_cast<uint8_t>(buffer[0])));
+
+        return true;
+    }
+
+    std::cerr << "File not open for reading" << std::endl;
+    return false;
 }
 
 std::size_t ElfFile::getFileSize()

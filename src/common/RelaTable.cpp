@@ -72,3 +72,48 @@ std::vector<char> RelaTable::getWriteData() const
 
     return data;
 }
+
+void RelaTable::readFromData(const std::vector<char> &data)
+{
+    size_t offset = 0;
+
+    auto read_uint32 = [&data, &offset]() -> uint32_t
+    {
+        uint32_t value = 0;
+        value |= static_cast<uint8_t>(data[offset]);
+        value |= static_cast<uint8_t>(data[offset + 1]) << 8;
+        value |= static_cast<uint8_t>(data[offset + 2]) << 16;
+        value |= static_cast<uint8_t>(data[offset + 3]) << 24;
+        offset += sizeof(uint32_t);
+        return value;
+    };
+
+    // Clear the current symbol table and names
+    table.clear();
+    id = 0; // reset the symbol index counter
+
+    // Read SymbolEntries
+    while (offset < data.size())
+    {
+
+        // Try reading each field assuming we are still in the symbol entries section
+        RelaEntry entry(-1, -1, RelaType::ABS, -1, -1);
+
+        try
+        {
+            entry.offset = read_uint32();
+            entry.section_id = read_uint32();
+            entry.type = static_cast<RelaType>(read_uint32());
+            entry.symbol_id = read_uint32();
+            entry.addend = read_uint32();
+        }
+        catch (const std::out_of_range &)
+        {
+            break; // Exit loop if we run out of data (in case of incomplete data)
+        }
+
+        table.push_back(entry);
+
+        // Update the id to track the last symbol index
+    }
+}

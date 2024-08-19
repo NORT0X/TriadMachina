@@ -47,10 +47,10 @@ std::vector<char> LiteralTable::getWriteData()
     std::vector<char> res;
     for (LiteralEntry &entry : this->table)
     {
-        res.emplace_back((char)(entry.value >> 8 * 3));
-        res.emplace_back((char)(entry.value >> 8 * 2));
-        res.emplace_back((char)(entry.value >> 8));
         res.emplace_back((char)entry.value);
+        res.emplace_back((char)(entry.value >> 8));
+        res.emplace_back((char)(entry.value >> 8 * 2));
+        res.emplace_back((char)(entry.value >> 8 * 3));
     }
     return res;
 }

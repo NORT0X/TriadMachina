@@ -17,6 +17,10 @@ typedef uint32_t SymbolIndex;
 
 typedef uint32_t ForwardRefIndex;
 
+typedef uint32_t Address;
+
+#define HEADER_SIZE 32 // bytes
+
 /* Used by pareser */
 enum
 {
@@ -86,6 +90,21 @@ struct MInstruction
         : OC(OC), MOD(MOD), A(A), B(B), C(C), DISP(DISP)
     {
     }
+};
+
+struct ObjectHeader
+{
+    uint32_t codeStart;
+    uint32_t codeSize;
+
+    uint32_t symStart;
+    uint32_t symSize;
+
+    uint32_t secStart;
+    uint32_t secSize;
+
+    uint32_t relaStart;
+    uint32_t relaSize;
 };
 
 /* Table Entries */
@@ -173,10 +192,13 @@ public:
     std::vector<char> read() override;
     bool write(const std::vector<char> &data) override;
 
+    bool openForRead(const std::string &filename);
+
     bool writeAtPosition(size_t position, const std::vector<char> &data);
     bool readAtPosition(size_t position, std::vector<char> &data, size_t size);
 
     bool writeAtPosition(size_t position, uint32_t number);
+    bool readAtPosition(size_t position, uint32_t &number);
 
     std::size_t getFileSize();
 

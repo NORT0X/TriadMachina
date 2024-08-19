@@ -16,6 +16,7 @@ public:
     size_t getSize() const { return this->table.size(); }
 
     std::vector<char> getWriteData() const;
+    void readFromData(const std::vector<char> &data);
 
     friend std::ostream &operator<<(std::ostream &os, const RelaTable &relaTable);
 

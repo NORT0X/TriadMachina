@@ -96,6 +96,8 @@ std::vector<char> SectionTable::getWriteData() const
         data.push_back(static_cast<char>((value >> 24) & 0xFF));
     };
 
+    write_uint32(this->table.size());
+
     // Process each SectionEntry in the table
     for (const SectionEntry &entry : table)
     {
@@ -116,4 +118,74 @@ std::vector<char> SectionTable::getWriteData() const
     }
 
     return data;
+}
+
+void SectionTable::readFromData(const std::vector<char> &data)
+{
+    size_t offset = 0;
+
+    auto read_uint32 = [&data, &offset]() -> uint32_t
+    {
+        uint32_t value = 0;
+        value |= static_cast<uint8_t>(data[offset]);
+        value |= static_cast<uint8_t>(data[offset + 1]) << 8;
+        value |= static_cast<uint8_t>(data[offset + 2]) << 16;
+        value |= static_cast<uint8_t>(data[offset + 3]) << 24;
+        offset += sizeof(uint32_t);
+        return value;
+    };
+
+    // Clear the current symbol table and names
+    table.clear();
+    sectionNames.clear();
+    id = 0; // reset the symbol index counter
+
+    uint32_t num_sections = read_uint32();
+
+    // Read SymbolEntries
+    while (offset < num_sections * 16)
+    {
+
+        // Try reading each field assuming we are still in the symbol entries section
+        SectionEntry entry(-1, 0, 0);
+
+        try
+        {
+            entry.index = read_uint32();
+            entry.name = read_uint32();
+            entry.base = read_uint32();
+            entry.size = read_uint32();
+        }
+        catch (const std::out_of_range &)
+        {
+            break; // Exit loop if we run out of data (in case of incomplete data)
+        }
+
+        table.push_back(entry);
+
+        // Update the id to track the last symbol index
+        id = entry.index + 1;
+    }
+
+    // Read symbol names
+    while (offset < data.size())
+    {
+        std::string name;
+
+        // Extract characters from data until we hit the null terminator
+        while (offset < data.size() && data[offset] != '\0')
+        {
+            name.push_back(data[offset]);
+            ++offset;
+        }
+
+        // Skip the null terminator
+        if (offset < data.size() && data[offset] == '\0')
+        {
+            ++offset;
+        }
+
+        // Add the string to the symbol names list
+        sectionNames.push_back(name);
+    }
 }
