@@ -5,9 +5,16 @@
 
 #include <vector>
 #include <map>
+#include <set>
 #include <string>
 
 class Object;
+
+enum class OutType
+{
+    HEX,
+    RELOCATABLE
+};
 
 class Linker
 {
@@ -25,15 +32,24 @@ public:
 
     void makeHexFile();
     void makeRelocatableFile();
+    void writeSection(std::string section, OutType type);
 
 private:
     std::string outFile;
+    std::map<Address, char> code;
+    std::set<std::string> finishedSec;
 
     std::vector<std::string> inputFiles;
 
     std::map<std::string, Address> placeArguments;
+    Address currPosition = 0;
+
     bool isHex;
     bool isRelocatable;
 
     std::vector<Object> objects;
+
+    SectionTable secTable;
+    SymbolTable symTable;
+    RelaTable relaTable;
 };

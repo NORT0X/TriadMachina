@@ -29,6 +29,7 @@ void Assembler::end()
 
         // Write pool
         this->eFile.write(this->currSecPool.getWriteData());
+
         // Size of pool to locationCounter
         this->locationCounter += this->currSecPool.getSizeInBytes();
 
@@ -44,6 +45,8 @@ void Assembler::end()
 
         // Do pool backpatching
         this->poolPatching();
+
+        lastSection->size += this->currSecPool.getWriteData().size();
         this->poolBackpatch.clear(); // Delete map boolBackpatching
 
         this->currSecPool.clear();
@@ -144,7 +147,7 @@ void Assembler::sectionDirective(std::string sectionName)
         std::vector<char> pool = this->currSecPool.getWriteData();
         this->eFile.write(pool);
 
-        // Add size of pool to locationCounter
+        //  Add size of pool to locationCounter
         this->locationCounter += this->currSecPool.getSizeInBytes();
 
         // Now add rela to fix pool where zeros are
@@ -159,7 +162,10 @@ void Assembler::sectionDirective(std::string sectionName)
 
         // Do pool backpatching
         this->poolPatching();
+
+        prevSection->size += pool.size();
         this->poolBackpatch.clear(); // Delete map boolBackpatching
+        this->poolZeroRela.clear();
 
         this->currSecPool.clear();
     }
@@ -222,7 +228,7 @@ void Assembler::label(std::string labelName)
 
     if (exists != nullptr && exists->defined == false)
     {
-        exists->value = this->locationCounter;
+        exists->value = this->locationCounter - this->sectionTable.findSection(currentSection)->base; // - 32 because of header
         exists->section_id = this->currentSection;
         exists->defined = true;
     }

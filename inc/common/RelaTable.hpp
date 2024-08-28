@@ -14,6 +14,7 @@ public:
     void addEntry(RelaEntry entry);
     RelaEntry *getEntryForSymbol(SymbolIndex symbol_id);
     size_t getSize() const { return this->table.size(); }
+    std::vector<RelaEntry> getTable() const { return this->table; }
 
     std::vector<char> getWriteData() const;
     void readFromData(const std::vector<char> &data);

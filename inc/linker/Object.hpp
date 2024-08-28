@@ -8,6 +8,8 @@
 
 class Object
 {
+    friend class Linker;
+
 public:
     Object(std::string fileName);
 

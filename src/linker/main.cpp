@@ -21,12 +21,12 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        const std::string prefix = "–place=";
+        const std::string prefix = "-place=";
         if (arg.rfind(prefix, 0) == 0)
         {
             // Extract the part after "–place="
             std::string section_and_address = arg.substr(prefix.length());
-
+            std::cout << "TEST\n";
             // Split at '@'
             size_t at_pos = section_and_address.find('@');
             if (at_pos != std::string::npos)
@@ -35,8 +35,8 @@ int main(int argc, char *argv[])
                 std::string address = section_and_address.substr(at_pos + 1);
 
                 // Output the results
-                uint32_t value = static_cast<uint32_t>(std::stoul(address));
-
+                uint32_t value = static_cast<uint32_t>(std::stoul(address, nullptr, 16));
+                std::cout << section << " " << value << "\n";
                 linker->addPlace(section, value);
             }
 

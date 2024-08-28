@@ -17,12 +17,15 @@ public:
     void addSymbol(SymbolEntry entry, std::string name);
 
     SymbolEntry *findSymbol(std::string name);
+    std::string getSymbolName(SymbolIndex index) { return this->symbolNames[index]; };
 
     std::vector<char> getWriteData();
 
     void readFromData(const std::vector<char> &data);
 
     size_t getSize() const { return this->table.size(); }
+
+    std::vector<SymbolEntry> getTable() const { return this->table; }
 
     friend std::ostream &operator<<(std::ostream &os, const SymbolTable &symbolTable);
 
