@@ -26,6 +26,7 @@ public:
     size_t getSize() const { return this->table.size(); }
 
     std::vector<SymbolEntry> getTable() const { return this->table; }
+    bool checkAllDefined() const;
 
     friend std::ostream &operator<<(std::ostream &os, const SymbolTable &symbolTable);
 

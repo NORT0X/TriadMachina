@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
         if (arg == "-o" && i + 1 < argc)
         {
             outputFile = argv[++i];
+            linker->setOutputFile(outputFile);
             continue;
         }
 

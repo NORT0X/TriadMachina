@@ -189,3 +189,16 @@ void SymbolTable::readFromData(const std::vector<char> &data)
         symbolNames.push_back(name);
     }
 }
+
+bool SymbolTable::checkAllDefined() const
+{
+    for (const SymbolEntry &sym : this->table)
+    {
+        if (sym.defined == false)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}

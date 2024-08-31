@@ -21,6 +21,7 @@ class Linker
 public:
     Linker() : isHex(false), isRelocatable(false) {}
 
+    void setOutputFile(std::string fileName) { this->outFileName = fileName; }
     void addInputFile(std::string fileName);
     void setHex() { this->isHex = true; }
     void setRelocatable() { this->isRelocatable = true; }
@@ -33,9 +34,15 @@ public:
     void makeHexFile();
     void makeRelocatableFile();
     void writeSection(std::string section, OutType type);
+    void fixRelocations();
+    void writeBinaryHex();
+    void writeRelocatableElf();
+    void writeHeaderAndTables();
 
 private:
-    std::string outFile;
+    std::string outFileName;
+    ElfFile outFile;
+
     std::map<Address, char> code;
     std::set<std::string> finishedSec;
 
