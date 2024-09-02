@@ -39,9 +39,30 @@ LINKER_HEADER_FILES = \
 inc/linker/Linker.hpp \
 inc/linker/Object.hpp
 
+EMULATOR_SOURCE_FILES = \
+src/emulator/main.cpp \
+src/emulator/Bus.cpp \
+src/emulator/CPU.cpp \
+src/emulator/Emulator.cpp \
+src/emulator/Instruction.cpp \
+src/emulator/IO.cpp \
+src/emulator/Memory.cpp
+
+EMULATOR_HEADER_FILES = \
+inc/emulator/Bus.hpp \
+inc/emulator/CPU.hpp \
+inc/emulator/Emulator.hpp \
+inc/emulator/Instruction.hpp \
+inc/emulator/IO.hpp \
+inc/emulator/Memory.hpp
+
 CXX=g++
 OPT=-03
-CXXFLAGS=-std=c++14 -static-libstdc++ --static
+
+INCLUDE_PATHS = -Iinc -Imisc -Iinc/common -Iinc/assembler -Iinc/linker -Iinc/emulator
+CXXFLAGS = -std=c++17 -static-libstdc++ --static $(INCLUDE_PATHS)
+
+all: asembler linker emulator
 
 asembler: $(COMMON_SOURCE_FILES) $(COMMON_HEADER_FILES) $(AS_SOURCE_FILES) $(AS_HEADER_FILES)
 	$(CXX) $(CXXFLAGS) $(AS_SOURCE_FILES) $(COMMON_SOURCE_FILES) -LFL -o asembler.exe
@@ -49,3 +70,8 @@ asembler: $(COMMON_SOURCE_FILES) $(COMMON_HEADER_FILES) $(AS_SOURCE_FILES) $(AS_
 linker: $(COMMON_SOURCE_FILES) $(COMMON_HEADER_FILES) $(LINKER_SOURCE_FILES) $(LINKER_HEADER_FILES)
 	$(CXX) $(CXXFLAGS) $(LINKER_SOURCE_FILES) $(COMMON_SOURCE_FILES) -LFL -o linker.exe
 
+emulator: $(COMMON_SOURCE_FILES) $(COMMON_HEADER_FILES) $(EMULATOR_SOURCE_FILES) $(EMULATOR_HEADER_FILES)
+	$(CXX) $(CXXFLAGS) $(EMULATOR_SOURCE_FILES) $(COMMON_SOURCE_FILES) -LFL -o emulator.exe
+	
+clean:
+	rm emulator.exe linker.exe asembler.exe

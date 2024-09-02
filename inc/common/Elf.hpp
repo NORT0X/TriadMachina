@@ -86,6 +86,8 @@ struct MInstruction
     uint8_t C;
     uint16_t DISP;
 
+    MInstruction() {}
+
     MInstruction(OPCODE OC, uint8_t MOD, uint8_t A, uint8_t B, uint8_t C, uint16_t DISP)
         : OC(OC), MOD(MOD), A(A), B(B), C(C), DISP(DISP)
     {

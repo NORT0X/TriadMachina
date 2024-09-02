@@ -68,7 +68,7 @@ void Linker::makeHexFile()
                 currPosition = it->second;
             }
 
-            this->writeSection(secName, OutType::HEX);
+            this->writeSection(secName);
         }
     }
 
@@ -103,7 +103,7 @@ void Linker::makeRelocatableFile()
 
             finishedSec.insert(secName);
 
-            this->writeSection(secName, OutType::HEX);
+            this->writeSection(secName);
         }
     }
 
@@ -116,7 +116,7 @@ void Linker::makeRelocatableFile()
     this->writeRelocatableElf();
 }
 
-void Linker::writeSection(std::string section, OutType type = OutType::HEX)
+void Linker::writeSection(std::string section)
 {
     std::size_t secSize = 0;
 

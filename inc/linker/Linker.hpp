@@ -33,7 +33,7 @@ public:
 
     void makeHexFile();
     void makeRelocatableFile();
-    void writeSection(std::string section, OutType type);
+    void writeSection(std::string section);
     void fixRelocations();
     void writeBinaryHex();
     void writeRelocatableElf();

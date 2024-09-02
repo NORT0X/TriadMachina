@@ -40,3 +40,7 @@ commit.sh
 .VSCodeCounter/
 
 tests
+
+.cache
+.clangd
+compile_commands.json
