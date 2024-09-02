@@ -62,16 +62,21 @@ OPT=-03
 INCLUDE_PATHS = -Iinc -Imisc -Iinc/common -Iinc/assembler -Iinc/linker -Iinc/emulator
 CXXFLAGS = -std=c++17 -static-libstdc++ --static $(INCLUDE_PATHS)
 
+
 all: asembler linker emulator
 
-asembler: $(COMMON_SOURCE_FILES) $(COMMON_HEADER_FILES) $(AS_SOURCE_FILES) $(AS_HEADER_FILES)
-	$(CXX) $(CXXFLAGS) $(AS_SOURCE_FILES) $(COMMON_SOURCE_FILES) -LFL -o asembler.exe
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-linker: $(COMMON_SOURCE_FILES) $(COMMON_HEADER_FILES) $(LINKER_SOURCE_FILES) $(LINKER_HEADER_FILES)
-	$(CXX) $(CXXFLAGS) $(LINKER_SOURCE_FILES) $(COMMON_SOURCE_FILES) -LFL -o linker.exe
+asembler: $(AS_SOURCE_FILES:.cpp=.o) $(COMMON_SOURCE_FILES:.cpp=.o)
+	$(CXX) $(CXXFLAGS) $(AS_SOURCE_FILES:.cpp=.o) $(COMMON_SOURCE_FILES:.cpp=.o) -o asembler.exe
 
-emulator: $(COMMON_SOURCE_FILES) $(COMMON_HEADER_FILES) $(EMULATOR_SOURCE_FILES) $(EMULATOR_HEADER_FILES)
-	$(CXX) $(CXXFLAGS) $(EMULATOR_SOURCE_FILES) $(COMMON_SOURCE_FILES) -LFL -o emulator.exe
+linker: $(LINKER_SOURCE_FILES:.cpp=.o) $(COMMON_SOURCE_FILES:.cpp=.o)
+	$(CXX) $(CXXFLAGS) $(LINKER_SOURCE_FILES:.cpp=.o) $(COMMON_SOURCE_FILES:.cpp=.o) -o linker.exe
+
+emulator: $(EMULATOR_SOURCE_FILES:.cpp=.o) $(COMMON_SOURCE_FILES:.cpp=.o)
+	$(CXX) $(CXXFLAGS) $(EMULATOR_SOURCE_FILES:.cpp=.o) $(COMMON_SOURCE_FILES:.cpp=.o) -o emulator.exe
+
 	
 clean:
 	rm emulator.exe linker.exe asembler.exe
