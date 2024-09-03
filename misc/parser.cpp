@@ -1556,19 +1556,19 @@ yyreduce:
   case 12:
 /* Line 1792 of yacc.c  */
 #line 65 "parser.y"
-    { std::cout << (yyvsp[(1) - (2)].sval) << std::endl; as->label((yyvsp[(1) - (2)].sval)); }
+    { as->label((yyvsp[(1) - (2)].sval)); }
     break;
 
   case 15:
 /* Line 1792 of yacc.c  */
 #line 71 "parser.y"
-    { std::cout << "SECTION" << " " << (yyvsp[(2) - (2)].sval) << std::endl; as->sectionDirective((yyvsp[(2) - (2)].sval)); }
+    { as->sectionDirective((yyvsp[(2) - (2)].sval)); }
     break;
 
   case 17:
 /* Line 1792 of yacc.c  */
 #line 73 "parser.y"
-    { std::cout << "LITERAL " << (yyvsp[(2) - (2)].ival) << std::endl; as->skipDirective((yyvsp[(2) - (2)].ival)); }
+    { as->skipDirective((yyvsp[(2) - (2)].ival)); }
     break;
 
   case 18:
@@ -1604,19 +1604,19 @@ yyreduce:
   case 23:
 /* Line 1792 of yacc.c  */
 #line 82 "parser.y"
-    { std::cout << "IRET\n"; as->iretInstruction();}
+    { as->iretInstruction();}
     break;
 
   case 24:
 /* Line 1792 of yacc.c  */
 #line 83 "parser.y"
-    { std::cout << "CALL " << (yyvsp[(2) - (2)].ival) << std::endl; as->callInstruction((yyvsp[(2) - (2)].ival)); }
+    { as->callInstruction((yyvsp[(2) - (2)].ival)); }
     break;
 
   case 25:
 /* Line 1792 of yacc.c  */
 #line 84 "parser.y"
-    { std::cout << "CALL " << (yyvsp[(2) - (2)].sval) << std::endl; as->callInstruction((yyvsp[(2) - (2)].sval)); }
+    { as->callInstruction((yyvsp[(2) - (2)].sval)); }
     break;
 
   case 26:
@@ -1628,49 +1628,49 @@ yyreduce:
   case 27:
 /* Line 1792 of yacc.c  */
 #line 86 "parser.y"
-    { std::cout << "JMP " << (yyvsp[(2) - (2)].ival) << std::endl; as->jmpInstruction((yyvsp[(2) - (2)].ival)); }
+    { as->jmpInstruction((yyvsp[(2) - (2)].ival)); }
     break;
 
   case 28:
 /* Line 1792 of yacc.c  */
 #line 87 "parser.y"
-    { std::cout << "JMP " << (yyvsp[(2) - (2)].sval) << std::endl; as->jmpInstruction((yyvsp[(2) - (2)].sval)); }
+    { as->jmpInstruction((yyvsp[(2) - (2)].sval)); }
     break;
 
   case 29:
 /* Line 1792 of yacc.c  */
 #line 88 "parser.y"
-    { std::cout << "BEQ " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].ival) << std::endl; as->branch((yyvsp[(2) - (6)].rval), (yyvsp[(4) - (6)].rval), (yyvsp[(6) - (6)].ival), 0b0001); }
+    { as->branch((yyvsp[(2) - (6)].rval), (yyvsp[(4) - (6)].rval), (yyvsp[(6) - (6)].ival), 0b0001); }
     break;
 
   case 30:
 /* Line 1792 of yacc.c  */
 #line 89 "parser.y"
-    { std::cout << "BEQ " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].sval) << std::endl; as->branch((yyvsp[(2) - (6)].rval), (yyvsp[(4) - (6)].rval), (yyvsp[(6) - (6)].sval), 0b1001); }
+    { as->branch((yyvsp[(2) - (6)].rval), (yyvsp[(4) - (6)].rval), (yyvsp[(6) - (6)].sval), 0b0001); }
     break;
 
   case 31:
 /* Line 1792 of yacc.c  */
 #line 90 "parser.y"
-    { std::cout << "BNE " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].ival) << std::endl; as->branch((yyvsp[(2) - (6)].rval), (yyvsp[(4) - (6)].rval), (yyvsp[(6) - (6)].ival), 0b0010); }
+    { as->branch((yyvsp[(2) - (6)].rval), (yyvsp[(4) - (6)].rval), (yyvsp[(6) - (6)].ival), 0b0010); }
     break;
 
   case 32:
 /* Line 1792 of yacc.c  */
 #line 91 "parser.y"
-    { std::cout << "BNE " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].sval) << std::endl; as->branch((yyvsp[(2) - (6)].rval), (yyvsp[(4) - (6)].rval), (yyvsp[(6) - (6)].sval), 0b1010); }
+    { as->branch((yyvsp[(2) - (6)].rval), (yyvsp[(4) - (6)].rval), (yyvsp[(6) - (6)].sval), 0b0010); }
     break;
 
   case 33:
 /* Line 1792 of yacc.c  */
 #line 92 "parser.y"
-    { std::cout << "BGT " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].ival) << std::endl; as->branch((yyvsp[(2) - (6)].rval), (yyvsp[(4) - (6)].rval), (yyvsp[(6) - (6)].ival), 0b0011); }
+    { as->branch((yyvsp[(2) - (6)].rval), (yyvsp[(4) - (6)].rval), (yyvsp[(6) - (6)].ival), 0b0011); }
     break;
 
   case 34:
 /* Line 1792 of yacc.c  */
 #line 93 "parser.y"
-    { std::cout << "BGT " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(4) - (6)].rval) << " " << (yyvsp[(6) - (6)].sval) << std::endl; as->branch((yyvsp[(2) - (6)].rval), (yyvsp[(4) - (6)].rval), (yyvsp[(6) - (6)].sval), 0b1011); }
+    { as->branch((yyvsp[(2) - (6)].rval), (yyvsp[(4) - (6)].rval), (yyvsp[(6) - (6)].sval), 0b0011); }
     break;
 
   case 35:
@@ -1754,43 +1754,43 @@ yyreduce:
   case 48:
 /* Line 1792 of yacc.c  */
 #line 107 "parser.y"
-    { std::cout << "LD " << (yyvsp[(3) - (5)].ival) << " " << (yyvsp[(5) - (5)].rval) << std::endl; as->loadLiteral((yyvsp[(3) - (5)].ival), (yyvsp[(5) - (5)].rval), LiteralMode::VALUE); }
+    { as->loadLiteral((yyvsp[(3) - (5)].ival), (yyvsp[(5) - (5)].rval), LiteralMode::VALUE); }
     break;
 
   case 49:
 /* Line 1792 of yacc.c  */
 #line 108 "parser.y"
-    { std::cout << "LD " << (yyvsp[(3) - (5)].sval) << " " << (yyvsp[(5) - (5)].rval) << std::endl; as->loadSymbol((yyvsp[(3) - (5)].sval), (yyvsp[(5) - (5)].rval), SymbolMode::VALUE); }
+    { as->loadSymbol((yyvsp[(3) - (5)].sval), (yyvsp[(5) - (5)].rval), SymbolMode::VALUE); }
     break;
 
   case 50:
 /* Line 1792 of yacc.c  */
 #line 109 "parser.y"
-    { std::cout << "LD " << (yyvsp[(2) - (4)].ival) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->loadLiteral((yyvsp[(2) - (4)].ival), (yyvsp[(4) - (4)].rval), LiteralMode::MEMORY); }
+    { as->loadLiteral((yyvsp[(2) - (4)].ival), (yyvsp[(4) - (4)].rval), LiteralMode::MEMORY); }
     break;
 
   case 51:
 /* Line 1792 of yacc.c  */
 #line 110 "parser.y"
-    { std::cout << "LD " << (yyvsp[(2) - (4)].sval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->loadSymbol((yyvsp[(2) - (4)].sval), (yyvsp[(4) - (4)].rval), SymbolMode::MEMORY); }
+    { as->loadSymbol((yyvsp[(2) - (4)].sval), (yyvsp[(4) - (4)].rval), SymbolMode::MEMORY); }
     break;
 
   case 52:
 /* Line 1792 of yacc.c  */
 #line 111 "parser.y"
-    { std::cout << "LD " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].rval) << std::endl; as->loadReg((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval), RegMode::REG_DIR); }
+    { as->loadReg((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].rval), RegMode::REG_DIR); }
     break;
 
   case 53:
 /* Line 1792 of yacc.c  */
 #line 112 "parser.y"
-    { std::cout << "LD " << (yyvsp[(3) - (6)].rval) << " " << (yyvsp[(6) - (6)].rval) << std::endl; as->loadReg((yyvsp[(3) - (6)].rval), (yyvsp[(6) - (6)].rval), RegMode::REG_IND); }
+    { as->loadReg((yyvsp[(3) - (6)].rval), (yyvsp[(6) - (6)].rval), RegMode::REG_IND); }
     break;
 
   case 54:
 /* Line 1792 of yacc.c  */
 #line 113 "parser.y"
-    { std::cout << "LD " << (yyvsp[(3) - (8)].rval) << "+" << (yyvsp[(5) - (8)].ival) << (yyvsp[(8) - (8)].rval) << std::endl; as->loadRegLiteral((yyvsp[(3) - (8)].rval), (yyvsp[(5) - (8)].ival), (yyvsp[(8) - (8)].rval)); }
+    { as->loadRegLiteral((yyvsp[(3) - (8)].rval), (yyvsp[(5) - (8)].ival), (yyvsp[(8) - (8)].rval)); }
     break;
 
   case 55:
@@ -1802,25 +1802,25 @@ yyreduce:
   case 56:
 /* Line 1792 of yacc.c  */
 #line 115 "parser.y"
-    { std::cout << "ST " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].ival) << std::endl; as->storeLiteral((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].ival)); }
+    { as->storeLiteral((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].ival)); }
     break;
 
   case 57:
 /* Line 1792 of yacc.c  */
 #line 116 "parser.y"
-    { std::cout << "ST " << (yyvsp[(2) - (4)].rval) << " " << (yyvsp[(4) - (4)].sval) << std::endl; as->storeSymbol((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].sval)); }
+    { as->storeSymbol((yyvsp[(2) - (4)].rval), (yyvsp[(4) - (4)].sval)); }
     break;
 
   case 58:
 /* Line 1792 of yacc.c  */
 #line 117 "parser.y"
-    { std::cout << "ST " << (yyvsp[(2) - (6)].rval) << " " << (yyvsp[(5) - (6)].rval) << std::endl; as->storeReg((yyvsp[(2) - (6)].rval), (yyvsp[(5) - (6)].rval)); }
+    { as->storeReg((yyvsp[(2) - (6)].rval), (yyvsp[(5) - (6)].rval)); }
     break;
 
   case 59:
 /* Line 1792 of yacc.c  */
 #line 118 "parser.y"
-    { std::cout << "ST " << (yyvsp[(2) - (8)].rval) << " " << (yyvsp[(5) - (8)].rval) << "+" << (yyvsp[(7) - (8)].ival) << std::endl; as->storeRegLiteral((yyvsp[(2) - (8)].rval), (yyvsp[(5) - (8)].rval), (yyvsp[(7) - (8)].ival)); }
+    { as->storeRegLiteral((yyvsp[(2) - (8)].rval), (yyvsp[(5) - (8)].rval), (yyvsp[(7) - (8)].ival)); }
     break;
 
   case 60:
@@ -1844,49 +1844,49 @@ yyreduce:
   case 63:
 /* Line 1792 of yacc.c  */
 #line 125 "parser.y"
-    { std::cout << "INIT_LIST " << (yyvsp[(1) - (1)].sval) << std::endl; as->wordDirectiveSymbol((yyvsp[(1) - (1)].sval)); }
+    { as->wordDirectiveSymbol((yyvsp[(1) - (1)].sval)); }
     break;
 
   case 64:
 /* Line 1792 of yacc.c  */
 #line 126 "parser.y"
-    { std::cout << "INIT_LIST " << (yyvsp[(1) - (1)].ival) << std::endl; as->wordDirectiveLiteral((yyvsp[(1) - (1)].ival)); }
+    { as->wordDirectiveLiteral((yyvsp[(1) - (1)].ival)); }
     break;
 
   case 65:
 /* Line 1792 of yacc.c  */
 #line 127 "parser.y"
-    { std::cout << "INIT_LIST " << (yyvsp[(3) - (3)].sval) << std::endl; as->wordDirectiveSymbol((yyvsp[(3) - (3)].sval)); }
+    { as->wordDirectiveSymbol((yyvsp[(3) - (3)].sval)); }
     break;
 
   case 66:
 /* Line 1792 of yacc.c  */
 #line 128 "parser.y"
-    { std::cout << "INIT_LIST " << (yyvsp[(3) - (3)].ival) << std::endl; as->wordDirectiveLiteral((yyvsp[(3) - (3)].ival)); }
+    { as->wordDirectiveLiteral((yyvsp[(3) - (3)].ival)); }
     break;
 
   case 67:
 /* Line 1792 of yacc.c  */
 #line 132 "parser.y"
-    { std::cout << "GLOBAL_ARGS " << (yyvsp[(1) - (1)].sval) << std::endl; as->globalDirective((yyvsp[(1) - (1)].sval)); }
+    { as->globalDirective((yyvsp[(1) - (1)].sval)); }
     break;
 
   case 68:
 /* Line 1792 of yacc.c  */
 #line 133 "parser.y"
-    { std::cout << "GLOBAL_ARGS " << (yyvsp[(3) - (3)].sval) << std::endl; as->globalDirective((yyvsp[(3) - (3)].sval)); }
+    { as->globalDirective((yyvsp[(3) - (3)].sval)); }
     break;
 
   case 69:
 /* Line 1792 of yacc.c  */
 #line 137 "parser.y"
-    { std::cout << "EXTERN_ARGS " << (yyvsp[(1) - (1)].sval) << std::endl; as->externDirective((yyvsp[(1) - (1)].sval)); }
+    { as->externDirective((yyvsp[(1) - (1)].sval)); }
     break;
 
   case 70:
 /* Line 1792 of yacc.c  */
 #line 138 "parser.y"
-    { std::cout << "EXTERN_ARGS " << (yyvsp[(3) - (3)].sval) << std::endl; as->externDirective((yyvsp[(3) - (3)].sval)); }
+    { as->externDirective((yyvsp[(3) - (3)].sval)); }
     break;
 
   case 71:

@@ -62,15 +62,15 @@ statement:
          ;
 
 label:
-        SYMBOL ':' { std::cout << $1 << std::endl; as->label($1); }
+        SYMBOL ':' { as->label($1); }
         ;
 
 directive:
         GLOBAL global_args
         | EXTERN extern_args
-        | SECTION SYMBOL                        { std::cout << "SECTION" << " " << $2 << std::endl; as->sectionDirective($2); }
+        | SECTION SYMBOL                        { as->sectionDirective($2); }
         | WORD init_list
-        | SKIP LITERAL                          { std::cout << "LITERAL " << $2 << std::endl; as->skipDirective($2); }
+        | SKIP LITERAL                          { as->skipDirective($2); }
         | ASCII STRING                          { std::cout << "ASCII " << "$2" << std::endl; }
         | EQU SYMBOL ',' ival_expr              { std::cout << "EQU " << $2 << "=" << "IVAL" << std::endl; }
         | END                                   { as->end(); }
@@ -79,18 +79,18 @@ directive:
 instruction:
         HALT                                    { MInstruction instr(OPCODE::HALT, 0, 0, 0, 0 ,0); as->insertInstruction(instr); }
         | INT                                   { MInstruction instr(OPCODE::INT, 0, 0, 0, 0, 0); as->insertInstruction(instr); }
-        | IRET                                  { std::cout << "IRET\n"; as->iretInstruction();}
-        | CALL LITERAL                          { std::cout << "CALL " << $2 << std::endl; as->callInstruction($2); }
-        | CALL SYMBOL                           { std::cout << "CALL " << $2 << std::endl; as->callInstruction($2); }
+        | IRET                                  { as->iretInstruction();}
+        | CALL LITERAL                          { as->callInstruction($2); }
+        | CALL SYMBOL                           { as->callInstruction($2); }
         | RET                                   { MInstruction instr(OPCODE::LOAD, 3, PC, SP, 0, 4); as->insertInstruction(instr); }
-        | JMP LITERAL                           { std::cout << "JMP " << $2 << std::endl; as->jmpInstruction($2); }
-        | JMP SYMBOL                            { std::cout << "JMP " << $2 << std::endl; as->jmpInstruction($2); }
-        | BEQ GPR ',' GPR ',' LITERAL           { std::cout << "BEQ " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b0001); }
-        | BEQ GPR ',' GPR ',' SYMBOL            { std::cout << "BEQ " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b1001); }
-        | BNE GPR ',' GPR ',' LITERAL           { std::cout << "BNE " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b0010); }
-        | BNE GPR ',' GPR ',' SYMBOL            { std::cout << "BNE " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b1010); }
-        | BGT GPR ',' GPR ',' LITERAL           { std::cout << "BGT " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b0011); }
-        | BGT GPR ',' GPR ',' SYMBOL            { std::cout << "BGT " << $2 << " " << $4 << " " << $6 << std::endl; as->branch($2, $4, $6, 0b1011); }
+        | JMP LITERAL                           { as->jmpInstruction($2); }
+        | JMP SYMBOL                            { as->jmpInstruction($2); }
+        | BEQ GPR ',' GPR ',' LITERAL           { as->branch($2, $4, $6, 0b0001); }
+        | BEQ GPR ',' GPR ',' SYMBOL            { as->branch($2, $4, $6, 0b0001); }
+        | BNE GPR ',' GPR ',' LITERAL           { as->branch($2, $4, $6, 0b0010); }
+        | BNE GPR ',' GPR ',' SYMBOL            { as->branch($2, $4, $6, 0b0010); }
+        | BGT GPR ',' GPR ',' LITERAL           { as->branch($2, $4, $6, 0b0011); }
+        | BGT GPR ',' GPR ',' SYMBOL            { as->branch($2, $4, $6, 0b0011); }
         | PUSH GPR                              { MInstruction instr(OPCODE::STORE, 1, SP, 0, $2, -4); as->insertInstruction(instr); }
         | POP GPR                               { MInstruction instr(OPCODE::LOAD, 3, $2, 0x0E, 0, 4); as->insertInstruction(instr); }
         | XCHG GPR ',' GPR                      { MInstruction instr(OPCODE::XCHG, 0, 0, $4, $2, 0); as->insertInstruction(instr); }
@@ -104,38 +104,38 @@ instruction:
         | XOR GPR ',' GPR                       { MInstruction instr(OPCODE::LOGIC, 3, $4, $4, $2, 0); as->insertInstruction(instr); }
         | SHL GPR ',' GPR                       { MInstruction instr(OPCODE::SHIFT, 0, $4, $4, $2, 0); as->insertInstruction(instr); }
         | SHR GPR ',' GPR                       { MInstruction instr(OPCODE::SHIFT, 1, $4, $4, $2, 0); as->insertInstruction(instr); }
-        | LD '$' LITERAL ',' GPR                { std::cout << "LD " << $3 << " " << $5 << std::endl; as->loadLiteral($3, $5, LiteralMode::VALUE); }
-        | LD '$' SYMBOL ',' GPR                 { std::cout << "LD " << $3 << " " << $5 << std::endl; as->loadSymbol($3, $5, SymbolMode::VALUE); }
-        | LD  LITERAL ',' GPR                   { std::cout << "LD " << $2 << " " << $4 << std::endl; as->loadLiteral($2, $4, LiteralMode::MEMORY); }
-        | LD  SYMBOL ',' GPR                    { std::cout << "LD " << $2 << " " << $4 << std::endl; as->loadSymbol($2, $4, SymbolMode::MEMORY); }
-        | LD  GPR ',' GPR                       { std::cout << "LD " << $2 << " " << $4 << std::endl; as->loadReg($2, $4, RegMode::REG_DIR); }
-        | LD '[' GPR ']' ',' GPR                { std::cout << "LD " << $3 << " " << $6 << std::endl; as->loadReg($3, $6, RegMode::REG_IND); }
-        | LD '[' GPR '+' LITERAL ']' ',' GPR    { std::cout << "LD " << $3 << "+" << $5 << $8 << std::endl; as->loadRegLiteral($3, $5, $8); }
+        | LD '$' LITERAL ',' GPR                { as->loadLiteral($3, $5, LiteralMode::VALUE); }
+        | LD '$' SYMBOL ',' GPR                 { as->loadSymbol($3, $5, SymbolMode::VALUE); }
+        | LD  LITERAL ',' GPR                   { as->loadLiteral($2, $4, LiteralMode::MEMORY); }
+        | LD  SYMBOL ',' GPR                    { as->loadSymbol($2, $4, SymbolMode::MEMORY); }
+        | LD  GPR ',' GPR                       { as->loadReg($2, $4, RegMode::REG_DIR); }
+        | LD '[' GPR ']' ',' GPR                { as->loadReg($3, $6, RegMode::REG_IND); }
+        | LD '[' GPR '+' LITERAL ']' ',' GPR    { as->loadRegLiteral($3, $5, $8); }
         | LD '[' GPR '+' SYMBOL ']' ',' GPR     { std::cout << "LD " << $3 << "+" << $5 << $8 << std::endl; }
-        | ST GPR ',' LITERAL                    { std::cout << "ST " << $2 << " " << $4 << std::endl; as->storeLiteral($2, $4); }
-        | ST GPR ',' SYMBOL                     { std::cout << "ST " << $2 << " " << $4 << std::endl; as->storeSymbol($2, $4); }
-        | ST GPR ',' '[' GPR ']'                { std::cout << "ST " << $2 << " " << $5 << std::endl; as->storeReg($2, $5); }
-        | ST GPR ',' '[' GPR '+' LITERAL ']'    { std::cout << "ST " << $2 << " " << $5 << "+" << $7 << std::endl; as->storeRegLiteral($2, $5, $7); }
+        | ST GPR ',' LITERAL                    { as->storeLiteral($2, $4); }
+        | ST GPR ',' SYMBOL                     { as->storeSymbol($2, $4); }
+        | ST GPR ',' '[' GPR ']'                { as->storeReg($2, $5); }
+        | ST GPR ',' '[' GPR '+' LITERAL ']'    { as->storeRegLiteral($2, $5, $7); }
         | ST GPR ',' '[' GPR '+' SYMBOL ']'     { std::cout << "ST " << $2 << " " << $5 << "+" << $7 << std::endl; }
         | CSRRD CSR ',' GPR                     { MInstruction instr(OPCODE::LOAD, 0, $4, $2, 0, 0); as->insertInstruction(instr); }
         | CSRWR GPR ',' CSR                     { MInstruction instr(OPCODE::LOAD, 4, $4, $2, 0, 0); as->insertInstruction(instr); }
         ;
 
 init_list:
-        SYMBOL                                  { std::cout << "INIT_LIST " << $1 << std::endl; as->wordDirectiveSymbol($1); }
-        | LITERAL                               { std::cout << "INIT_LIST " << $1 << std::endl; as->wordDirectiveLiteral($1); }
-        | init_list ',' SYMBOL                  { std::cout << "INIT_LIST " << $3 << std::endl; as->wordDirectiveSymbol($3); }
-        | init_list ',' LITERAL                 { std::cout << "INIT_LIST " << $3 << std::endl; as->wordDirectiveLiteral($3); }
+        SYMBOL                                  { as->wordDirectiveSymbol($1); }
+        | LITERAL                               { as->wordDirectiveLiteral($1); }
+        | init_list ',' SYMBOL                  { as->wordDirectiveSymbol($3); }
+        | init_list ',' LITERAL                 { as->wordDirectiveLiteral($3); }
         ;
 
 global_args:
-        SYMBOL                                  { std::cout << "GLOBAL_ARGS " << $1 << std::endl; as->globalDirective($1); }
-        | global_args ',' SYMBOL                { std::cout << "GLOBAL_ARGS " << $3 << std::endl; as->globalDirective($3); }
+        SYMBOL                                  { as->globalDirective($1); }
+        | global_args ',' SYMBOL                { as->globalDirective($3); }
         ;
 
 extern_args:
-        SYMBOL                                  { std::cout << "EXTERN_ARGS " << $1 << std::endl; as->externDirective($1); }
-        | extern_args ',' SYMBOL                { std::cout << "EXTERN_ARGS " << $3 << std::endl; as->externDirective($3); }
+        SYMBOL                                  { as->externDirective($1); }
+        | extern_args ',' SYMBOL                { as->externDirective($3); }
         ;
 
 ival_expr:

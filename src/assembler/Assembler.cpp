@@ -236,9 +236,9 @@ void Assembler::label(std::string labelName)
     // If it's not already in symbol table that means that it's local variable
     if (exists == nullptr)
     {
-        SymbolEntry entry(0, this->currentSection, SymbolBind::LOCAL_BIND, this->locationCounter, true);
+        uint32_t value = this->locationCounter - this->sectionTable.findSection(currentSection)->base;
+        SymbolEntry entry(0, this->currentSection, SymbolBind::LOCAL_BIND, value, true);
         this->symbolTable.addSymbol(entry, labelName);
-        std::cout << this->symbolTable.findSymbol(labelName)->defined;
     }
 
     // Backpatching
@@ -303,12 +303,12 @@ void Assembler::jmpInstruction(std::string symbol)
     // Symbol is in current section
     if (symbolSection == this->currentSection && entry->defined == true)
     {
-        int32_t relativeOffset = symbolVal - (this->locationCounter + 4); // relative to the next instruction
+        int32_t relativeOffset = symbolVal - ((this->locationCounter - 32) + 4); // relative to the next instruction
 
         // Check if the relative offset can fit within the signed 12-bit range (-2048 to 2047)
         if (relativeOffset >= -2048 && relativeOffset <= 2047)
         {
-            MInstruction instr(OPCODE::JMP, 8, PC, 0, 0, relativeOffset);
+            MInstruction instr(OPCODE::JMP, 0, PC, 0, 0, relativeOffset);
             this->insertInstruction(instr);
             return;
         }
@@ -382,7 +382,7 @@ void Assembler::branch(int reg1, int reg2, std::string symbol, uint8_t mode)
     // Symbol is in current section
     if (symbolSection == this->currentSection && entry->defined == true)
     {
-        int32_t relativeOffset = symbolVal - (this->locationCounter + 4); // relative to the next instruction
+        int32_t relativeOffset = symbolVal - ((this->locationCounter - 32) + 4); // relative to the next instruction
 
         // Check if the relative offset can fit within the signed 12-bit range (-2048 to 2047)
         if (relativeOffset >= -2048 && relativeOffset <= 2047)
@@ -428,7 +428,6 @@ void Assembler::callInstruction(uint32_t literal)
     }
 
     LiteralEntry newLiteral(literal);
-    std::cout << literal << '\n';
     uint32_t poolOffset = this->currSecPool.addLiteral(newLiteral);
 
     MInstruction instr(OPCODE::CALL, 1, PC, 0, 0, 0);

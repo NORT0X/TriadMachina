@@ -22,7 +22,6 @@ void Assembler::loadLiteral(uint32_t literal, int reg, LiteralMode mode)
 
         // If not put mem ind in literal pool
         LiteralEntry newLiteral(literal);
-        std::cout << literal << '\n';
         uint32_t poolOffset = this->currSecPool.addLiteral(newLiteral);
 
         MInstruction instr(OPCODE::LOAD, 2, reg, PC, 0, 0);

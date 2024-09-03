@@ -11,7 +11,9 @@ int main(int argc, char *argv[])
         return -2;
     }
 
-    Emulator emulator(argv[1]);
+    std::string inputFile = argv[1];
+
+    Emulator emulator(inputFile);
 
     emulator.run();
 

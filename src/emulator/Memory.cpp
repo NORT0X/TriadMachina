@@ -1,5 +1,7 @@
 #include "../../inc/emulator/Memory.hpp"
 
+#include <iostream>
+
 uint8_t Memory::read(Address address)
 {
     return memory[address];
@@ -33,13 +35,21 @@ void Memory::write32(Address address, uint32_t data)
 std::ostream &operator<<(std::ostream &os, const Memory &memory)
 {
     os << "\n\nMemory\n";
-
+    int i = 0;
     for (const auto &pair : memory.memory)
     {
-        os << std::hex << std::uppercase << pair.first << ": " << static_cast<unsigned int>(pair.second) << '\n';
+        os << std::hex << std::uppercase;
+        if (i == 4)
+        {
+            os << "\n"
+               << pair.first << ": ";
+            i = 0;
+        }
+        os << static_cast<unsigned int>(pair.second) << ' ';
+        ++i;
     }
 
-    os << std::dec;
+    os << std::dec << '\n';
 
     return os;
 }

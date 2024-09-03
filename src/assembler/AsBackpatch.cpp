@@ -105,7 +105,6 @@ void Assembler::patchFlinksForSymbol(std::string symbolName)
 
 void Assembler::poolPatching()
 {
-    std::cout << "POOLBACKPATCH\n";
     for (const auto &pair : poolBackpatch)
     {
         uint32_t position = pair.first;
@@ -114,7 +113,6 @@ void Assembler::poolPatching()
         SectionEntry *section = this->sectionTable.findSection(this->currentSection);
         uint32_t sectionPosition = position - section->base + 4;
         uint32_t offset = section->size + offsetInPool - sectionPosition;
-        std::cout << offset + sectionPosition << '\n';
 
         if (offset > 0x0FFF)
         {
@@ -123,7 +121,6 @@ void Assembler::poolPatching()
 
         // Read current value from file at the patch position
         std::vector<char> currentValue(2, 0);
-        std::cout << "POSITION :" << position << '\n';
         if (!this->eFile.readAtPosition(position, currentValue, 2))
         {
             std::cerr << "Failed to read current value at position: " << position << std::endl;
@@ -139,7 +136,6 @@ void Assembler::poolPatching()
         std::vector<char> buff(2, 0);
         buff[1] = actualOffset >> 8;
         buff[0] = actualOffset;
-        std::cout << "PATCH_VALUE: " << actualOffset << '\n';
 
         this->eFile.writeAtPosition(position, buff);
     }

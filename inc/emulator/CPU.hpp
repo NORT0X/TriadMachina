@@ -4,20 +4,35 @@ class Memory;
 
 #include <cstdint>
 
+enum class INT_CAUSE
+{
+    BAD_INSTR = 1,
+    TIMER,
+    TERMINAL,
+    SOFTWARE
+};
+
 class CPU
 {
 public:
+    friend class Emulator;
     CPU();
 
     void reset();
     void start() { this->running = true; }
+    bool isRunning() const { return this->running; }
     void attachMemory(Memory *memory) { this->memory = memory; }
+
+    void tick();
 
     void fetch();
     void execute();
+    void interruptHandler();
 
     void push(uint32_t reg);
     uint32_t pop();
+
+    friend std::ostream &operator<<(std::ostream &os, const CPU &cpu);
 
 private:
     void callInstr();

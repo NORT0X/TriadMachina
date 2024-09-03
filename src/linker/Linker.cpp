@@ -41,7 +41,6 @@ void Linker::run()
 
 void Linker::loadObjectFromFile(std::string fileName)
 {
-
     Object obj(fileName);
     this->objects.emplace_back(std::move(obj));
 }
@@ -218,10 +217,10 @@ void Linker::fixRelocations()
             throw std::runtime_error("Error: can't do relocation for position that is not used.\n");
         }
 
-        this->code[positionToFix] = symbolEntry->value >> 8 * 3;
-        this->code[positionToFix + 1] = symbolEntry->value >> 8 * 2;
-        this->code[positionToFix + 2] = symbolEntry->value >> 8;
-        this->code[positionToFix + 3] = symbolEntry->value;
+        this->code[positionToFix + 3] = symbolEntry->value >> 8 * 3;
+        this->code[positionToFix + 2] = symbolEntry->value >> 8 * 2;
+        this->code[positionToFix + 1] = symbolEntry->value >> 8;
+        this->code[positionToFix + 0] = symbolEntry->value;
     }
 }
 
@@ -229,6 +228,7 @@ void Linker::writeBinaryHex()
 {
     outFile.open(outFileName);
 
+    int i = 0;
     for (const auto &pair : this->code)
     {
         std::vector<char> buff(5, 0);
@@ -240,12 +240,8 @@ void Linker::writeBinaryHex()
 
         buff[4] = pair.second;
 
-        std::cout << std::hex << std::uppercase                                // Set the output format to hexadecimal and uppercase
-                  << std::setw(2) << std::setfill('0')                         // Ensure the hex output is always 2 characters long
-                  << static_cast<int>(static_cast<unsigned char>(pair.second)) // Cast char to unsigned char, then to int
-                  << " ";
-
         outFile.write(buff);
+        i++;
     }
     std::cout << std::dec;
 }

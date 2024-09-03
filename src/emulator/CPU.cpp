@@ -1,6 +1,9 @@
 #include "../../inc/emulator/CPU.hpp"
 #include "../../inc/emulator/Memory.hpp"
 
+#include <iostream>
+#include <iomanip>
+
 CPU::CPU()
 {
     reset();
@@ -11,11 +14,19 @@ void CPU::reset()
     GPR[PC] = 0x40000000;
     GPR[SP] = 0xFFFFFF00;
     GPR[0] = 0;
-
     for (int i = 1; i < 14; ++i)
     {
         GPR[i] = 0;
     }
+
+    running = false;
+}
+
+void CPU::tick()
+{
+    fetch();
+    execute();
+    GPR[0] = 0;
 }
 
 void CPU::fetch()
@@ -33,7 +44,7 @@ void CPU::fetch()
     currentInstruction.DISP = ((IR[2] & 0x0F) << 8) | (0xFF & IR[3]);
     if ((currentInstruction.DISP & (1 << 11)) != 0)
     {
-        currentInstruction.DISP |= 0xF000;
+        currentInstruction.DISP |= 0xFFFFF000;
     }
 }
 
@@ -118,6 +129,10 @@ void CPU::execute()
         throw std::runtime_error("Error: wrong opcode at address: " + GPR[PC - 4]);
     }
     }
+}
+
+void CPU::interruptHandler()
+{
 }
 
 void CPU::push(uint32_t reg)
@@ -371,4 +386,28 @@ void CPU::storeInstr()
         break;
     }
     }
+}
+
+std::ostream &operator<<(std::ostream &os, const CPU &cpu)
+{
+    os << "-----------------------------------------------------------------" << std::endl;
+    os << "Emulated processor executed halt instruction" << std::endl;
+    os << "Emulated processor state:" << std::endl;
+
+    // Iterate through the general-purpose registers and print them
+    for (int i = 0; i < 16; ++i)
+    {
+        // Print each register in hexadecimal format
+        os << "r" << i << "=0x"
+           << std::setw(8) << std::setfill('0') << std::hex << std::uppercase
+           << cpu.GPR[i] << " ";
+
+        // Print a newline after every 4 registers to match the desired format
+        if ((i + 1) % 4 == 0)
+        {
+            os << std::endl;
+        }
+    }
+
+    return os;
 }

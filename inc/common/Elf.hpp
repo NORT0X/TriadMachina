@@ -84,7 +84,7 @@ struct MInstruction
     uint8_t A;
     uint8_t B;
     uint8_t C;
-    uint16_t DISP;
+    uint32_t DISP;
 
     MInstruction() {}
 
