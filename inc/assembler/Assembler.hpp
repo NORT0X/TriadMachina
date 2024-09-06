@@ -22,6 +22,7 @@ public:
     void sectionDirective(std::string sectionName);
     void wordDirectiveLiteral(uint32_t literal);
     void wordDirectiveSymbol(std::string symbolName);
+    void asciiDirective(std::string str);
 
     void label(std::string labelName);
 

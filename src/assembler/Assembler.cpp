@@ -216,6 +216,21 @@ void Assembler::wordDirectiveSymbol(std::string symbolName)
     locationCounter += 4;
 }
 
+void Assembler::asciiDirective(std::string str)
+{
+    std::vector<char> buff(str.size() + 1, 0);
+
+    for (int i = 0; i < str.size(); ++i)
+    {
+        buff[i] = str[i];
+    }
+
+    buff[str.size()] = '\0';
+
+    this->eFile.write(buff);
+    locationCounter += str.size();
+}
+
 void Assembler::label(std::string labelName)
 {
     // If it's already in symbol table update value

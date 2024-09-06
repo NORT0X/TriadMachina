@@ -71,7 +71,7 @@ directive:
         | SECTION SYMBOL                        { as->sectionDirective($2); }
         | WORD init_list
         | SKIP LITERAL                          { as->skipDirective($2); }
-        | ASCII STRING                          { std::cout << "ASCII " << "$2" << std::endl; }
+        | ASCII STRING                          { as->asciiDirective($2); }
         | EQU SYMBOL ',' ival_expr              { std::cout << "EQU " << $2 << "=" << "IVAL" << std::endl; }
         | END                                   { as->end(); }
         ;
