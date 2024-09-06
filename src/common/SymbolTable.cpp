@@ -67,7 +67,7 @@ std::ostream &operator<<(std::ostream &os, const SymbolTable &symbolTable)
            << std::setw(10) << entry.index
            << std::setw(10) << entry.section_id
            << std::setw(10) << static_cast<int>(entry.bind)
-           << std::setw(10) << entry.value
+           << std::setw(10) << std::hex << entry.value << std::dec
            << std::setw(10) << (entry.defined ? "Yes" : "No")
            << std::setw(10) << entry.flink
            << '\n';

@@ -1,6 +1,7 @@
 #include "../../inc/common/Elf.hpp"
 
 class Memory;
+class Terminal;
 
 #include <cstdint>
 
@@ -23,12 +24,14 @@ public:
     void start() { this->running = true; }
     bool isRunning() const { return this->running; }
     void attachMemory(Memory *memory) { this->memory = memory; }
+    void attachTerminal(Terminal *terminal) { this->terminal = terminal; }
 
     void tick();
 
     void fetch();
     void execute();
-    void badInstrInt();
+    void intHandle();
+    void terminalHandle();
 
     void push(uint32_t reg);
     uint32_t pop();
@@ -52,4 +55,10 @@ private:
     bool running = false;
 
     Memory *memory;
+    Terminal *terminal;
+
+    bool terminalIntCalled = false;
+    bool badInstrIntCalled = false;
+
+    bool testTrigger = false;
 };

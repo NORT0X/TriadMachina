@@ -26,6 +26,11 @@ uint32_t Memory::read32(Address address)
 
 void Memory::write32(Address address, uint32_t data)
 {
+    if (address >= TERM_OUT && address < (TERM_OUT + 4))
+    {
+        this->writenToTermOUT = true;
+    }
+
     for (int i = 0; i < 4; ++i)
     {
         memory[address + i] = (data >> 8 * i) & 0xFF;

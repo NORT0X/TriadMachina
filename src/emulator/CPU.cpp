@@ -1,5 +1,6 @@
 #include "../../inc/emulator/CPU.hpp"
 #include "../../inc/emulator/Memory.hpp"
+#include "../../inc/emulator/Terminal.hpp"
 
 #include <iostream>
 #include <iomanip>
@@ -14,6 +15,10 @@ void CPU::reset()
     GPR[PC] = 0x40000000;
     GPR[SP] = 0xFFFFFF00;
     GPR[0] = 0;
+
+    CSR[STATUS] = 0;
+    CSR[CAUSE] = 0;
+    CSR[HANDLER] = 0;
     for (int i = 1; i < 14; ++i)
     {
         GPR[i] = 0;
@@ -27,6 +32,11 @@ void CPU::tick()
     fetch();
     execute();
     GPR[0] = 0;
+
+    if (testTrigger)
+    {
+        std::cout << "PC: " << std::hex << GPR[PC] << std::dec << '\n';
+    }
 }
 
 void CPU::fetch()
@@ -126,18 +136,59 @@ void CPU::execute()
     }
     default:
     {
-        throw std::runtime_error("Error: wrong opcode at address: " + GPR[PC - 4]);
+        badInstrIntCalled = true;
     }
     }
 }
 
-void CPU::badInstrInt()
+void CPU::intHandle()
 {
+    uint32_t cause = INT_CAUSE::NO_INT;
+
+    if (badInstrIntCalled)
+    {
+        cause = INT_CAUSE::BAD_INSTR;
+        badInstrIntCalled = false;
+    }
+    else if (terminalIntCalled && ((CSR[STATUS] & 0x2) == 0) && ((CSR[STATUS] & 0x4) == 0))
+    {
+
+        cause = INT_CAUSE::TERMINAL;
+        terminalIntCalled = false;
+    }
+
+    if (cause == INT_CAUSE::NO_INT)
+    {
+        return;
+    }
+
     push(CSR[STATUS]);
-    push(CSR[PC]);
-    CSR[CAUSE] = INT_CAUSE::BAD_INSTR;
+    push(GPR[PC]);
+    CSR[CAUSE] = cause;
     CSR[STATUS] = CSR[STATUS] & (~0x4);
     GPR[PC] = CSR[HANDLER];
+}
+
+void CPU::terminalHandle()
+{
+    if (memory->isTermOUT())
+    {
+        Address toAddr = TERM_OUT;
+        uint32_t val = memory->read32(toAddr);
+        // terminal->putChar32(val);
+        putchar(val);
+        memory->resetTermOUT();
+    }
+
+    // uint32_t ch = terminal->readCharacter();
+    //  std::cout << ch << '\n';
+    uint32_t ch = getchar();
+    if (ch != EOF)
+    {
+        testTrigger = false;
+        memory->write32(TERM_IN, ch);
+        terminalIntCalled = true;
+    }
 }
 
 void CPU::push(uint32_t reg)
@@ -173,7 +224,7 @@ void CPU::callInstr()
     }
     default:
     {
-        badInstrInt();
+        badInstrIntCalled = true;
     }
     }
 }
@@ -246,7 +297,7 @@ void CPU::jmpInstr()
     }
     default:
     {
-        badInstrInt();
+        badInstrIntCalled = true;
     }
     }
 }
@@ -277,7 +328,7 @@ void CPU::arithmeticInstr()
     }
     default:
     {
-        badInstrInt();
+        badInstrIntCalled = true;
     }
     }
 }
@@ -308,7 +359,7 @@ void CPU::logicInstr()
     }
     default:
     {
-        badInstrInt();
+        badInstrIntCalled = true;
     }
     }
 }
@@ -392,13 +443,14 @@ void CPU::storeInstr()
     }
     default:
     {
-        badInstrInt();
+        badInstrIntCalled = true;
     }
     }
 }
 
 std::ostream &operator<<(std::ostream &os, const CPU &cpu)
 {
+    os << "\n";
     os << "-----------------------------------------------------------------" << std::endl;
     os << "Emulated processor executed halt instruction" << std::endl;
     os << "Emulated processor state:" << std::endl;

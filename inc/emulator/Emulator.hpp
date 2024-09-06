@@ -1,6 +1,7 @@
 #include "../../inc/common/Elf.hpp"
 #include "../../inc/emulator/Memory.hpp"
 #include "../../inc/emulator/CPU.hpp"
+#include "../../inc/emulator/Terminal.hpp"
 
 #include <string>
 
@@ -16,4 +17,5 @@ public:
 private:
     Memory memory;
     CPU cpu;
+    Terminal terminal;
 };

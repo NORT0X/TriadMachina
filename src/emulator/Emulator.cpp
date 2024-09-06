@@ -24,6 +24,7 @@ Emulator::Emulator(std::string inputFile)
     }
 
     cpu.attachMemory(&memory);
+    cpu.attachTerminal(&terminal);
 }
 
 void Emulator::run()
@@ -34,7 +35,11 @@ void Emulator::run()
     while (cpu.isRunning())
     {
         cpu.tick();
+
+        cpu.terminalHandle();
+
+        cpu.intHandle();
     }
+
     std::cout << cpu;
-    // std::cout << memory;
 }

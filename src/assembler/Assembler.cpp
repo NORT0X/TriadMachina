@@ -218,14 +218,13 @@ void Assembler::wordDirectiveSymbol(std::string symbolName)
 
 void Assembler::asciiDirective(std::string str)
 {
-    std::vector<char> buff(str.size() + 1, 0);
+    std::vector<char> buff(str.size() - 2, 0);
+    str = str.substr(1, str.size() - 2);
 
     for (int i = 0; i < str.size(); ++i)
     {
         buff[i] = str[i];
     }
-
-    buff[str.size()] = '\0';
 
     this->eFile.write(buff);
     locationCounter += str.size();

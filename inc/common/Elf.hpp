@@ -21,6 +21,9 @@ typedef uint32_t Address;
 
 #define HEADER_SIZE 32 // bytes
 
+#define TERM_OUT 0xFFFFFF00
+#define TERM_IN 0xFFFFFF04
+
 /* Used by pareser */
 enum
 {

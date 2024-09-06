@@ -41,19 +41,15 @@ inc/linker/Object.hpp
 
 EMULATOR_SOURCE_FILES = \
 src/emulator/main.cpp \
-src/emulator/Bus.cpp \
 src/emulator/CPU.cpp \
 src/emulator/Emulator.cpp \
-src/emulator/Instruction.cpp \
-src/emulator/IO.cpp \
+src/emulator/Terminal.cpp \
 src/emulator/Memory.cpp
 
 EMULATOR_HEADER_FILES = \
-inc/emulator/Bus.hpp \
 inc/emulator/CPU.hpp \
 inc/emulator/Emulator.hpp \
-inc/emulator/Instruction.hpp \
-inc/emulator/IO.hpp \
+inc/emulator/Terminal.hpp \
 inc/emulator/Memory.hpp
 
 CXX=g++
