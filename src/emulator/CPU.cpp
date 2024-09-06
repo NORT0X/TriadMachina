@@ -131,8 +131,13 @@ void CPU::execute()
     }
 }
 
-void CPU::interruptHandler()
+void CPU::badInstrInt()
 {
+    push(CSR[STATUS]);
+    push(CSR[PC]);
+    CSR[CAUSE] = INT_CAUSE::BAD_INSTR;
+    CSR[STATUS] = CSR[STATUS] & (~0x4);
+    GPR[PC] = CSR[HANDLER];
 }
 
 void CPU::push(uint32_t reg)
@@ -168,7 +173,7 @@ void CPU::callInstr()
     }
     default:
     {
-        throw std::runtime_error("Error: wrong mode at call instr at address: " + GPR[PC - 4]);
+        badInstrInt();
     }
     }
 }
@@ -241,7 +246,7 @@ void CPU::jmpInstr()
     }
     default:
     {
-        throw std::runtime_error("Error: wrong mode for JMP instruction at address: " + GPR[PC] - 4);
+        badInstrInt();
     }
     }
 }
@@ -272,7 +277,7 @@ void CPU::arithmeticInstr()
     }
     default:
     {
-        throw std::runtime_error("Error: wrong mode for ARITHMETIC instruction at address: " + GPR[PC] - 4);
+        badInstrInt();
     }
     }
 }
@@ -303,7 +308,7 @@ void CPU::logicInstr()
     }
     default:
     {
-        throw std::runtime_error("Error: wrong mode for LOGIC instruction at address: " + GPR[PC] - 4);
+        badInstrInt();
     }
     }
 }
@@ -384,6 +389,10 @@ void CPU::storeInstr()
         Address addr = GPR[currentInstruction.A];
         memory->write32(addr, GPR[currentInstruction.C]);
         break;
+    }
+    default:
+    {
+        badInstrInt();
     }
     }
 }

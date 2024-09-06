@@ -4,9 +4,10 @@ class Memory;
 
 #include <cstdint>
 
-enum class INT_CAUSE
+enum INT_CAUSE
 {
-    BAD_INSTR = 1,
+    NO_INT = 0,
+    BAD_INSTR,
     TIMER,
     TERMINAL,
     SOFTWARE
@@ -27,7 +28,7 @@ public:
 
     void fetch();
     void execute();
-    void interruptHandler();
+    void badInstrInt();
 
     void push(uint32_t reg);
     uint32_t pop();

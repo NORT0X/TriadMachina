@@ -57,7 +57,8 @@ inc/emulator/IO.hpp \
 inc/emulator/Memory.hpp
 
 CXX=g++
-OPT=-03
+OPT= -03
+
 
 INCLUDE_PATHS = -Iinc -Imisc -Iinc/common -Iinc/assembler -Iinc/linker -Iinc/emulator
 CXXFLAGS = -std=c++17 -static-libstdc++ --static $(INCLUDE_PATHS)
@@ -69,14 +70,15 @@ all: asembler linker emulator
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 asembler: $(AS_SOURCE_FILES:.cpp=.o) $(COMMON_SOURCE_FILES:.cpp=.o)
-	$(CXX) $(CXXFLAGS) $(AS_SOURCE_FILES:.cpp=.o) $(COMMON_SOURCE_FILES:.cpp=.o) -o asembler.exe
+	$(CXX) $(CXXFLAGS) $(AS_SOURCE_FILES:.cpp=.o) $(COMMON_SOURCE_FILES:.cpp=.o) -o asembler
 
 linker: $(LINKER_SOURCE_FILES:.cpp=.o) $(COMMON_SOURCE_FILES:.cpp=.o)
-	$(CXX) $(CXXFLAGS) $(LINKER_SOURCE_FILES:.cpp=.o) $(COMMON_SOURCE_FILES:.cpp=.o) -o linker.exe
+	$(CXX) $(CXXFLAGS) $(LINKER_SOURCE_FILES:.cpp=.o) $(COMMON_SOURCE_FILES:.cpp=.o) -o linker
 
 emulator: $(EMULATOR_SOURCE_FILES:.cpp=.o) $(COMMON_SOURCE_FILES:.cpp=.o)
-	$(CXX) $(CXXFLAGS) $(EMULATOR_SOURCE_FILES:.cpp=.o) $(COMMON_SOURCE_FILES:.cpp=.o) -o emulator.exe
+	$(CXX) $(CXXFLAGS) $(EMULATOR_SOURCE_FILES:.cpp=.o) $(COMMON_SOURCE_FILES:.cpp=.o) -o emulator
 
 	
 clean:
-	rm emulator.exe linker.exe asembler.exe
+	find . -type f -name '*.o' -not -path './test/*' -exec rm -f {} +
+	rm -f emulator linker asembler
