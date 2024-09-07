@@ -1,3 +1,4 @@
+BUILD_TYPE ?= release
 
 COMMON_SOURCE_FILES = \
 src/common/Elf.cpp \
@@ -53,12 +54,15 @@ inc/emulator/Terminal.hpp \
 inc/emulator/Memory.hpp
 
 CXX=g++
-OPT= -03
+OPT=-O3
 
 
 INCLUDE_PATHS = -Iinc -Imisc -Iinc/common -Iinc/assembler -Iinc/linker -Iinc/emulator
-CXXFLAGS = -std=c++17 -static-libstdc++ --static $(INCLUDE_PATHS)
-
+ifeq ($(BUILD_TYPE), debug)
+    CXXFLAGS = -std=c++17 -g -DDEBUG $(INCLUDE_PATHS)
+else
+    CXXFLAGS = -std=c++17 $(OPT) -static-libstdc++ --static $(INCLUDE_PATHS)
+endif
 
 all: asembler linker emulator
 
@@ -78,3 +82,6 @@ emulator: $(EMULATOR_SOURCE_FILES:.cpp=.o) $(COMMON_SOURCE_FILES:.cpp=.o)
 clean:
 	find . -type f -name '*.o' -not -path './test/*' -exec rm -f {} +
 	rm -f emulator linker asembler
+
+debug: BUILD_TYPE = debug
+debug: all
