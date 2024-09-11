@@ -1,7 +1,7 @@
 @echo off
 
 set ROOT_DIR=%~dp0..\  // Go one level up to the root directory
-set ASSEMBLER=..\asembler.exe
+set ASSEMBLER=..\build\asembler.exe
 set LINKER=..\linker.exe
 set EMULATOR=..\emulator.exe
 

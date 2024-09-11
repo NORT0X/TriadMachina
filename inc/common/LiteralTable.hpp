@@ -1,5 +1,6 @@
 #include <vector>
 #include <cstdint>
+#include <cstddef>
 
 struct LiteralEntry;
 
