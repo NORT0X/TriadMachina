@@ -66,7 +66,6 @@ void Linker::makeHexFile()
             {
                 currPosition = it->second;
             }
-
             this->writeSection(secName);
         }
     }
@@ -90,6 +89,7 @@ void Linker::makeHexFile()
 
 void Linker::makeRelocatableFile()
 {
+    std::cout << "--------------\n";
     for (Object &obj : this->objects)
     {
         for (SectionEntry &sec : obj.sectionTable.getTable())
@@ -110,7 +110,11 @@ void Linker::makeRelocatableFile()
     {
         sec.base += 32;
     }
-
+    std::cout << "SymTable\n";
+    std::cout << this->symTable << "\n\nSecTable\n";
+    std::cout << this->secTable << "\n\nRelaTable\n";
+    std::cout << this->relaTable.getSize() << '\n';
+    std::cout << this->relaTable << '\n';
     // Now write elf file
     this->writeRelocatableElf();
 }
@@ -126,6 +130,7 @@ void Linker::writeSection(std::string section)
 
     for (Object &obj : this->objects)
     {
+
         for (SectionEntry &sec : obj.sectionTable.getTable())
         {
             if (obj.sectionTable.getName(sec.index) == section)
@@ -163,6 +168,11 @@ void Linker::writeSection(std::string section)
                         if (sym.defined == true)
                         {
                             uint32_t value = currPosition - sec.size + sym.value;
+                            if (this->isRelocatable)
+                            {
+                                value = secSize + sym.value;
+                            }
+
                             symFound->defined = true;
                             symFound->value = value;
                             symFound->section_id = section_id;

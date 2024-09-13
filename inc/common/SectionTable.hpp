@@ -19,7 +19,7 @@ public:
     std::vector<char> getWriteData() const;
     void readFromData(const std::vector<char> &data);
 
-    std::vector<SectionEntry> getTable() const { return this->table; }
+    std::vector<SectionEntry> &getTable() { return this->table; }
 
     friend std::ostream &operator<<(std::ostream &os, const SectionTable &sectionTable);
 

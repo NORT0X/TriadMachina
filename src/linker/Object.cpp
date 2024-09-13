@@ -19,7 +19,6 @@ void Object::loadObjectFile()
     this->eFile.readAtPosition(this->header.codeStart, this->code, this->header.codeSize);
 
     std::vector<char> buff;
-
     // Read SymbolTable
     this->eFile.readAtPosition(this->header.symStart, buff, this->header.symSize);
     this->symbolTable.readFromData(buff);
