@@ -39,7 +39,8 @@ commit.sh
 .vscode/
 .VSCodeCounter/
 
-tests
+tests/*.txt
+tests/*.hex
 
 .cache
 .clangd
