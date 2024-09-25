@@ -59,9 +59,11 @@ int main(int argc, char *argv[])
     }
     as = make_unique<Assembler>(outputFile);
 
+    std::cout << "\n\n-------- " << outputFile << " --------";
+
     yyin = myFile;
 
     yyparse();
 
-    std::cout << "Praser done!" << std::endl;
+    std::cout << "Assembler done!" << std::endl;
 }

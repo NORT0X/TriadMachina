@@ -25,7 +25,7 @@ BUILD_DIR = build
 SUBDIRS = $(BUILD_DIR)/misc $(BUILD_DIR)/src/assembler $(BUILD_DIR)/src/common $(BUILD_DIR)/src/linker $(BUILD_DIR)/src/emulator
 
 # Targets
-all: $(BUILD_DIR) $(SUBDIRS) asembler linker emulator
+all: $(BUILD_DIR) $(SUBDIRS) assembler linker emulator
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
@@ -36,8 +36,8 @@ $(SUBDIRS):
 $(BUILD_DIR)/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-asembler: $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(AS_SOURCE_FILES)) $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(COMMON_SOURCE_FILES))
-	$(CXX) $(CXXFLAGS) -o $(BUILD_DIR)/asembler $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(AS_SOURCE_FILES) $(COMMON_SOURCE_FILES))
+assembler: $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(AS_SOURCE_FILES)) $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(COMMON_SOURCE_FILES))
+	$(CXX) $(CXXFLAGS) -o $(BUILD_DIR)/assembler $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(AS_SOURCE_FILES) $(COMMON_SOURCE_FILES))
 
 linker: $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(LINKER_SOURCE_FILES)) $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(COMMON_SOURCE_FILES))
 	$(CXX) $(CXXFLAGS) -o $(BUILD_DIR)/linker $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(LINKER_SOURCE_FILES) $(COMMON_SOURCE_FILES))

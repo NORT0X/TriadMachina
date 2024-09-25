@@ -55,21 +55,25 @@ std::ostream &operator<<(std::ostream &os, const SymbolTable &symbolTable)
        << std::setw(10) << "Index"
        << std::setw(10) << "Section"
        << std::setw(10) << "Bind"
-       << std::setw(10) << "Value"
+       << std::setw(15) << "Value"
        << std::setw(10) << "Defined"
-       << std::setw(10) << "Forward Ref"
+       // << std::setw(10) << "Forward Ref"
        << '\n';
 
     for (size_t i = 0; i < symbolTable.table.size(); ++i)
     {
         const SymbolEntry &entry = symbolTable.table[i];
+
+        std::ostringstream hexValue;
+        hexValue << "0x" << std::hex << std::uppercase << entry.value;
+        
         os << std::setw(20) << symbolTable.symbolNames[i]
            << std::setw(10) << entry.index
            << std::setw(10) << entry.section_id
            << std::setw(10) << static_cast<int>(entry.bind)
-           << std::setw(10) << std::hex << entry.value << std::dec
+           << std::setw(15) << hexValue.str()
            << std::setw(10) << (entry.defined ? "Yes" : "No")
-           << std::setw(10) << entry.flink
+           // << std::setw(10) << entry.flink
            << '\n';
     }
 

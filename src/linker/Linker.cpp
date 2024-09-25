@@ -78,11 +78,11 @@ void Linker::makeHexFile()
     // After finishing typing code and linekrs tables do relo
     this->fixRelocations();
 
-    std::cout << "SymTable\n";
-    std::cout << this->symTable << "\n\nSecTable\n";
-    std::cout << this->secTable << "\n\nRelaTable\n";
-    std::cout << this->relaTable.getSize() << '\n';
-    std::cout << this->relaTable << '\n';
+    // std::cout << "SymTable\n";
+    // std::cout << this->symTable << "\n\nSecTable\n";
+    // std::cout << this->secTable << "\n\nRelaTable\n";
+    // std::cout << this->relaTable.getSize() << '\n';
+    // std::cout << this->relaTable << '\n';
 
     this->writeBinaryHex();
 }
@@ -206,6 +206,15 @@ void Linker::writeSection(std::string section)
     }
 
     this->secTable.findSection(section)->size = secSize;
+
+    if (currPosition > maxPosition)
+    {
+        maxPosition = currPosition;
+    }
+    else
+    {
+        currPosition = maxPosition;
+    }
 }
 
 void Linker::fixRelocations()
@@ -224,7 +233,7 @@ void Linker::fixRelocations()
             this->code.count(positionToFix + 2) == 0 ||
             this->code.count(positionToFix + 3) == 0)
         {
-            throw std::runtime_error("Error: can't do relocation for position that is not used.\n");
+            std::cerr << "Error in relocation on position " << "0x" << std::hex << positionToFix << std::dec << '\n';
         }
 
         this->code[positionToFix + 3] = symbolEntry->value >> 8 * 3;
@@ -238,7 +247,8 @@ void Linker::writeBinaryHex()
 {
     outFile.open(outFileName);
 
-    int i = 0;
+    int i = 8;
+    Address prev = 0;
     for (const auto &pair : this->code)
     {
         std::vector<char> buff(5, 0);
@@ -249,7 +259,15 @@ void Linker::writeBinaryHex()
         buff[3] = pair.first;
 
         buff[4] = pair.second;
+        if (i == 8 || (prev + 1 != pair.first))
+        {
+            i = 0;
+            std::cout << '\n'
+                      << std::hex << std::uppercase << std::setw(8) << std::setfill('0') << pair.first << ": " << std::dec;
+        }
 
+        std::cout << std::hex << std::uppercase << std::setw(2) << std::setfill('0') << (static_cast<int>(pair.second) & 0xFF) << ' ' << std::dec;
+        prev = pair.first;
         outFile.write(buff);
         i++;
     }
@@ -265,11 +283,10 @@ void Linker::writeRelocatableElf()
 
     std::vector<char> codeBuffer(this->code.size());
 
-    for (const auto &[index, value] : this->code)
+    for (auto it = this->code.begin(); it != this->code.end(); ++it)
     {
-        codeBuffer[index] = value;
+        codeBuffer[it->first] = it->second;
     }
-
     this->outFile.write(codeBuffer);
 
     this->writeHeaderAndTables();

@@ -50,6 +50,7 @@ private:
 
     std::map<std::string, Address> placeArguments;
     Address currPosition = 0;
+    Address maxPosition = 0;
 
     bool isHex;
     bool isRelocatable;

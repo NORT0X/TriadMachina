@@ -44,7 +44,7 @@
 
 program:
         |
-        statements { std::cout << "END\n"; }
+        statements { }
         ;
 
 statements:
