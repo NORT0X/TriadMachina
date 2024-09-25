@@ -10,7 +10,7 @@ This project uses:
 
 Assembler features:
 
-- Set of instructions from this picture:
+- Set of instructions from this image:
   ![instr](https://github.com/user-attachments/assets/77338a15-ba3c-484b-b911-bdfba0ca5a25)
 - Directives:
   - .global <symbol_list>
