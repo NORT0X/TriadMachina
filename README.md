@@ -29,10 +29,10 @@ Linker features:
 - Run linker with:
   - ```<location_to_build>/linker [options] <input_files> ```
   - options:
-  - -o <output_name>
-  - -place=<section_name>@<address>
-  - -hex
-  - -relocatable
+    - -o <output_name>
+    - -place=<section_name>@<address>
+    - -hex
+    - -relocatable
 
 Emulator features:
 
